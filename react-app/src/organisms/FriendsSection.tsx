@@ -6,7 +6,8 @@ import {
   ACCEPT_FRIEND_REQUEST,
   REMOVE_FRIEND,
 } from "@graphql/mutations";
-import { SECTION, SECTION_TITLE, INPUT, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
+import { SECTION, INPUT, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
+import SectionTitle from "@atoms/SectionTitle";
 
 interface FriendEntry {
   id: number;
@@ -54,7 +55,7 @@ export default function FriendsSection() {
 
   return (
     <section className={SECTION} aria-label="Amis">
-      <h2 className={SECTION_TITLE}>Amis</h2>
+      <SectionTitle>Amis</SectionTitle>
 
       <form
         className="mb-3 flex gap-2"

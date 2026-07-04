@@ -3,9 +3,9 @@ import { useQuery } from "@apollo/client";
 import { GET_MATCHES } from "@graphql/queries";
 import MatchCard from "@molecules/MatchCard";
 import EmptyState from "@atoms/EmptyState";
+import SectionTitle from "@atoms/SectionTitle";
 import {
   SECTION,
-  SECTION_TITLE,
   DATA_TABLE,
   DATA_TABLE_TH,
   DATA_TABLE_TD,
@@ -52,7 +52,7 @@ export default function TeamDetail() {
   return (
     <>
       <section className={SECTION} aria-label={`Effectif de ${name}`}>
-        <h2 className={SECTION_TITLE}>Effectif</h2>
+        <SectionTitle>Effectif</SectionTitle>
         {squad.length === 0 ? (
           <EmptyState>Composition non encore disponible.</EmptyState>
         ) : (
@@ -83,7 +83,7 @@ export default function TeamDetail() {
 
       {stats.length > 0 && (
         <section className={SECTION} aria-label={`Statistiques de ${name}`}>
-          <h2 className={SECTION_TITLE}>Statistiques</h2>
+          <SectionTitle>Statistiques</SectionTitle>
           <table className={DATA_TABLE}>
             <thead>
               <tr>
@@ -130,7 +130,7 @@ export default function TeamDetail() {
       )}
 
       <section className={SECTION} aria-label={`Matchs de ${name}`}>
-        <h2 className={SECTION_TITLE}>Matchs</h2>
+        <SectionTitle>Matchs</SectionTitle>
         {sortedMatches.map((m) => (
           <MatchCard key={m.id} match={m} />
         ))}

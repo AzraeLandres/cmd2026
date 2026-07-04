@@ -4,6 +4,7 @@ import { useAuth } from "@context/AuthContext";
 import { GET_BETS } from "@graphql/queries";
 import { PLACE_BET } from "@graphql/mutations";
 import { SECTION, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
+import SectionTitle from "@atoms/SectionTitle";
 
 interface Match {
   homeTeam: string;
@@ -96,7 +97,7 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
 
   return (
     <section className={SECTION} aria-label="Paris des amis">
-      <h2 className="mb-3 text-sm text-text">🎯 Paris des amis</h2>
+      <SectionTitle>Paris des amis</SectionTitle>
 
       {matchStatus !== "FINISHED" && user && (
         <form

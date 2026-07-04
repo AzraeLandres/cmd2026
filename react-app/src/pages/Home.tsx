@@ -6,6 +6,7 @@ import { useAuth } from "@context/AuthContext";
 import { GET_MATCHES, GET_ALL_BETS } from "@graphql/queries";
 import MatchCard from "@molecules/MatchCard";
 import EmptyState from "@atoms/EmptyState";
+import SectionTitle from "@atoms/SectionTitle";
 import Match from "@interfaces/Match.ts";
 import Bet from "@interfaces/Bet.ts";
 import { pickFeaturedMatch, pickTeamMatch } from "@/utils/matchHelpers";
@@ -62,7 +63,7 @@ export default function Home() {
   return (
     <>
       <section className="mb-6" aria-label="Match du moment">
-        <h2 className="mb-2 text-sm text-text">Le match du moment</h2>
+        <SectionTitle>Le match du moment</SectionTitle>
         {featured ? (
           <MatchCard match={featured} />
         ) : (
@@ -80,9 +81,7 @@ export default function Home() {
             key={team}
             aria-label={`Prochain match de ${team}`}
           >
-            <h2 className="mb-2 text-sm text-text">
-              {team} — prochain match
-            </h2>
+            <SectionTitle>{team} — prochain match</SectionTitle>
             {!teamMatch && (
               <EmptyState>Aucun match trouvé pour {team}.</EmptyState>
             )}
@@ -105,7 +104,7 @@ export default function Home() {
 
       {upcomingBets.length > 0 && (
         <section className="mb-6" aria-label="Mes paris à venir">
-          <h2 className="mb-2 text-sm text-text">🎯 Mes paris à venir</h2>
+          <SectionTitle>Mes paris à venir</SectionTitle>
           {upcomingBets.map(({ matchId, homeScore, awayScore, match: m }) => (
             <Link
               key={matchId}
@@ -132,7 +131,7 @@ export default function Home() {
 
       {upcomingUnbetted.length > 0 && (
         <section className="mb-6" aria-label="Matchs sans pari">
-          <h2 className="mb-2 text-sm text-text">⏳ À parier</h2>
+          <SectionTitle>À parier</SectionTitle>
           {upcomingUnbetted.map((m) => (
             <Link
               key={m.id}

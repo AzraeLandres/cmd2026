@@ -4,7 +4,8 @@ import { useProfile } from "@context/ProfileContext";
 import { GET_MATCHES } from "@graphql/queries";
 import MatchCard from "@molecules/MatchCard";
 import EmptyState from "@atoms/EmptyState";
-import { SECTION, SECTION_TITLE } from "@utils/ui";
+import SectionTitle from "@atoms/SectionTitle";
+import { SECTION } from "@utils/ui";
 
 export default function Favorites() {
   const { favorites } = useProfile();
@@ -40,7 +41,7 @@ export default function Favorites() {
         );
         return (
           <section key={team} className={SECTION} aria-label={`Matchs de ${team}`}>
-            <h2 className={SECTION_TITLE}>{team}</h2>
+            <SectionTitle>{team}</SectionTitle>
             {teamMatches.length === 0 ? (
               <EmptyState>Aucun match pour {team}.</EmptyState>
             ) : (

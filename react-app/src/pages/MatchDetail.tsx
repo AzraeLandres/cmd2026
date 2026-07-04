@@ -7,6 +7,7 @@ import ScoreBlock from "@organisms/ScoreBlock";
 import EventRow from "@molecules/EventRow";
 import TeamLineup from "@molecules/TeamLineup";
 import EmptyState from "@atoms/EmptyState";
+import SectionTitle from "@atoms/SectionTitle";
 import BetSection from "./BetSection";
 
 const POLL_INTERVAL_MS = 5_000;
@@ -58,7 +59,7 @@ export default function MatchDetail() {
 
       {allEvents.length > 0 && (
         <div className="mb-4">
-          <h2 className="mb-2 text-sm text-text">Événements</h2>
+          <SectionTitle>Événements</SectionTitle>
           {allEvents.map((ev: any, i: number) => (
             <EventRow key={i} event={ev} />
           ))}
@@ -68,7 +69,7 @@ export default function MatchDetail() {
       {match.lineups &&
         (match.lineups.home?.length > 0 || match.lineups.away?.length > 0) && (
           <div className="mb-4">
-            <h2 className="mb-2 text-sm text-text">Compositions</h2>
+            <SectionTitle>Compositions</SectionTitle>
             <TeamLineup
               team={match.homeTeam}
               players={match.lineups.home ?? []}

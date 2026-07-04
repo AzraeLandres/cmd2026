@@ -4,6 +4,7 @@ import { useProfile } from "@context/ProfileContext";
 import { useAuth } from "@context/AuthContext";
 import { GET_MATCHES } from "@graphql/queries";
 import FriendsSection from "@organisms/FriendsSection";
+import SectionTitle from "@atoms/SectionTitle";
 import { INPUT } from "@utils/ui";
 
 export default function Profile() {
@@ -49,7 +50,7 @@ export default function Profile() {
 
       <section aria-label="Équipes favorites">
         <div className="mb-2.5 flex items-center justify-between gap-2.5">
-          <h2 className="text-sm text-text">Équipes favorites</h2>
+          <SectionTitle className="mb-0">Équipes favorites</SectionTitle>
           <input
             className={`${INPUT} w-[140px]`}
             type="search"

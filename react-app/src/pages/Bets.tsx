@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_BETS, GET_MATCHES } from "@graphql/queries";
 import EmptyState from "@atoms/EmptyState";
+import SectionTitle from "@atoms/SectionTitle";
 import {
-  SECTION_TITLE,
   DATA_TABLE,
   DATA_TABLE_TH,
   DATA_TABLE_TD,
@@ -76,7 +76,7 @@ export default function Bets() {
 
   return (
     <>
-      <h2 className={SECTION_TITLE}>Classement</h2>
+      <SectionTitle>Classement</SectionTitle>
       {sorted.length === 0 ? (
         <EmptyState>Aucun pari enregistré.</EmptyState>
       ) : (
@@ -102,7 +102,7 @@ export default function Bets() {
         </table>
       )}
 
-      <h2 className={`${SECTION_TITLE} mt-6`}>Tous les paris</h2>
+      <SectionTitle className="mt-6">Tous les paris</SectionTitle>
       {allBets.length === 0 ? (
         <EmptyState>Aucun pari pour l'instant.</EmptyState>
       ) : (

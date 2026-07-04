@@ -1,7 +1,6 @@
 export const CARD =
   "block rounded border border-border bg-surface p-4 shadow-app text-text no-underline mb-2";
 export const SECTION = "mb-6";
-export const SECTION_TITLE = "mb-2 text-sm text-text";
 export const INPUT =
   "rounded border border-border bg-surface px-3 py-2 text-sm text-text placeholder:text-textMuted focus:outline-none focus:ring-2 focus:ring-primary";
 export const BTN_PRIMARY =
