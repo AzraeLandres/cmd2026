@@ -1,47 +1,52 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
-import { useHeader } from '../App';
-import { GET_MATCHES } from '../graphql/queries';
-import MatchCard  from '../molecules/MatchCard';
-import EmptyState from '../atoms/EmptyState';
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import { useHeader } from "../App";
+import { GET_MATCHES } from "../graphql/queries";
+import MatchCard from "../molecules/MatchCard";
+import EmptyState from "../atoms/EmptyState";
 
 interface Player {
-  name:        string;
-  position?:   string;
+  name: string;
+  position?: string;
   shirtNumber?: number;
 }
 
 interface PlayerStat {
-  name:    string;
-  goals:   number;
+  name: string;
+  goals: number;
   assists: number;
-  yellow:  number;
-  red:     number;
+  yellow: number;
+  red: number;
 }
 
 export default function TeamDetail() {
-  const { name }  = useParams<{ name: string }>();
+  const { name } = useParams<{ name: string }>();
   const setHeader = useHeader();
 
   useEffect(() => {
-    setHeader({ title: name ?? '', showBack: true, liveMinute: null });
+    setHeader({ title: name ?? "", showBack: true, liveMinute: null });
   }, [setHeader, name]);
 
   const { data, loading, error } = useQuery(GET_MATCHES);
 
-  if (error)   return <EmptyState role="alert">Impossible de charger les données.</EmptyState>;
+  if (error)
+    return (
+      <EmptyState role="alert">Impossible de charger les données.</EmptyState>
+    );
   if (loading) return <EmptyState>Chargement…</EmptyState>;
 
   const matches = (data?.matches ?? []).filter(
-    (m: { homeTeam: string; awayTeam: string }) => m.homeTeam === name || m.awayTeam === name
+    (m: { homeTeam: string; awayTeam: string }) =>
+      m.homeTeam === name || m.awayTeam === name,
   );
   const sortedMatches = [...matches].sort(
-    (a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a: { date: string }, b: { date: string }) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
-  const squad: Player[]      = [];
-  const stats: PlayerStat[]  = [];
+  const squad: Player[] = [];
+  const stats: PlayerStat[] = [];
 
   return (
     <>
@@ -53,7 +58,9 @@ export default function TeamDetail() {
           <table className="data-table">
             <thead>
               <tr>
-                <th scope="col" className="num">N°</th>
+                <th scope="col" className="num">
+                  N°
+                </th>
                 <th scope="col">Joueur</th>
                 <th scope="col">Poste</th>
               </tr>
@@ -61,9 +68,9 @@ export default function TeamDetail() {
             <tbody>
               {squad.map((p, i) => (
                 <tr key={i}>
-                  <td className="num">{p.shirtNumber ?? '—'}</td>
+                  <td className="num">{p.shirtNumber ?? "—"}</td>
                   <td>{p.name}</td>
-                  <td>{p.position ?? '—'}</td>
+                  <td>{p.position ?? "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -72,7 +79,10 @@ export default function TeamDetail() {
       </section>
 
       {stats.length > 0 && (
-        <section className="home-section" aria-label={`Statistiques de ${name}`}>
+        <section
+          className="home-section"
+          aria-label={`Statistiques de ${name}`}
+        >
           <h2 className="section-title">Statistiques</h2>
           <table className="data-table">
             <thead>
@@ -80,8 +90,12 @@ export default function TeamDetail() {
                 <th>Joueur</th>
                 <th className="num">Buts</th>
                 <th className="num">Passes D.</th>
-                <th className="num" aria-label="Cartons jaunes">🟨</th>
-                <th className="num" aria-label="Cartons rouges">🟥</th>
+                <th className="num" aria-label="Cartons jaunes">
+                  🟨
+                </th>
+                <th className="num" aria-label="Cartons rouges">
+                  🟥
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -101,7 +115,9 @@ export default function TeamDetail() {
 
       <section className="home-section" aria-label={`Matchs de ${name}`}>
         <h2 className="section-title">Matchs</h2>
-        {sortedMatches.map((m: { id: string }) => <MatchCard key={m.id} match={m} />)}
+        {sortedMatches.map((m) => (
+          <MatchCard key={m.id} match={m} />
+        ))}
       </section>
     </>
   );
