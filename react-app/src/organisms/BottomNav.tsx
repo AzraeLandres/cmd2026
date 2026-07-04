@@ -1,45 +1,70 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from "react-router-dom";
+import { Home, Goal, Star, CircleUser, type LucideIcon } from "lucide-react";
 
 interface NavItemConfig {
-  to:    string;
-  end:   boolean;
-  icon:  string;
+  to: string;
+  end: boolean;
+  icon: LucideIcon;
   label: string;
 }
 
 const NAV_ITEMS: NavItemConfig[] = [
-  { to: '/',       end: true,  icon: '⌂',  label: 'Accueil' },
-  { to: '/phases', end: false, icon: '⚽', label: 'Phases'  },
-  { to: '/paris',  end: false, icon: '★',  label: 'Paris'   },
-  { to: '/profil', end: false, icon: '◉',  label: 'Profil'  },
+  { to: "/", end: true, icon: Home, label: "Accueil" },
+  { to: "/phases", end: false, icon: Goal, label: "Phases" },
+  { to: "/paris", end: false, icon: Star, label: "Paris" },
+  { to: "/profil", end: false, icon: CircleUser, label: "Profil" },
 ];
 
-function useIsActive(to: string, end: boolean): boolean {
-  const { pathname } = useLocation();
-  if (to === '/phases') return pathname.startsWith('/phases') || pathname.startsWith('/matches') || pathname.startsWith('/match/');
-  if (end) return pathname === '/';
+function isItemActive(pathname: string, to: string, end: boolean): boolean {
+  if (to === "/phases")
+    return (
+      pathname.startsWith("/phases") ||
+      pathname.startsWith("/matches") ||
+      pathname.startsWith("/match/")
+    );
+  if (end) return pathname === "/";
   return pathname.startsWith(to);
 }
 
-function NavItem({ to, end, icon, label }: NavItemConfig) {
-  const active = useIsActive(to, end);
+function NavItem({
+  to,
+  end,
+  icon: Icon,
+  label,
+  active,
+}: NavItemConfig & { active: boolean }) {
   return (
     <NavLink
       to={to}
       end={end}
-      className={'nav-item' + (active ? ' active' : '')}
-      aria-current={active ? 'page' : undefined}
+      className={
+        "flex flex-1 flex-row justify-center items-center  gap-1.5 p-3 text-sm no-underline transition-colors " +
+        (active
+          ? "text-white bg-appBg font-semibold"
+          : "text-primary text-textMuted")
+      }
+      aria-current={active ? "page" : undefined}
     >
-      <span className="nav-icon" aria-hidden="true">{icon}</span>
-      <span className="nav-label">{label}</span>
+      <Icon aria-hidden="true" size={20} />
+      <span>{label}</span>
     </NavLink>
   );
 }
 
 export default function BottomNav() {
+  const { pathname } = useLocation();
   return (
-    <nav className="bottom-nav" aria-label="Navigation principale">
-      {NAV_ITEMS.map((item) => <NavItem key={item.to} {...item} />)}
+    <nav
+      className="flex items-center justify-center border-t border-border bg-surface "
+      aria-label="Navigation principale"
+    >
+      {NAV_ITEMS.map((item) => (
+        <NavItem
+          key={item.to}
+          {...item}
+          active={isItemActive(pathname, item.to, item.end)}
+        />
+      ))}
     </nav>
   );
 }

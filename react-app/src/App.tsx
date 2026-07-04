@@ -28,7 +28,7 @@ export default function App() {
       <a href="#main-content" className="skip-link">
         Aller au contenu principal
       </a>
-      <div className="min-h-screen py-4 flex flex-col ">
+      <div className="min-h-screen flex flex-col ">
         <ModeBanner />
         <TopBar
           title={header.title}
