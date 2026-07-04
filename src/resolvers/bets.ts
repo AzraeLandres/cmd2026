@@ -1,4 +1,5 @@
 import { db } from '../lib/db';
+import { getMatchById } from '../lib/football';
 import { GraphQLContext, Bet } from '../types';
 import { GraphQLError } from 'graphql';
 
@@ -80,6 +81,12 @@ export const betsResolvers = {
       const pool = requireDb();
 
       if (args.homeScore < 0 || args.awayScore < 0) throw new GraphQLError('Scores invalides');
+
+      const match = await getMatchById(args.matchId);
+      if (!match) throw new GraphQLError('Match introuvable');
+      if (match.status === 'FINISHED') {
+        throw new GraphQLError('Ce match est terminé, impossible de parier');
+      }
 
       await pool.query(
         `INSERT INTO bets (user_id, match_id, home_score, away_score)

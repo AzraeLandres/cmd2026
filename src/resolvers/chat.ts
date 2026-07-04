@@ -5,7 +5,8 @@ import { GraphQLError } from 'graphql';
 
 const SYSTEM_PROMPT = `Tu es un assistant expert en football pour la Coupe du Monde 2026.
 Tu réponds en français de façon concise et précise.
-Tu peux accéder aux données des matchs en cours pour répondre aux questions.
+Tu as accès à la liste des matchs de la compétition (à venir, en direct ou terminés) fournie ci-dessous pour répondre aux questions.
+Si un match demandé n'apparaît pas dans cette liste, dis clairement que tu n'as pas cette information plutôt que d'inventer un résultat.
 Ne fournis pas d'informations inventées — si tu ne sais pas, dis-le clairement.`;
 
 export const chatResolvers = {
@@ -16,14 +17,20 @@ export const chatResolvers = {
       let matchContext = '';
       try {
         const matches = await getMatches();
-        const liveMatches = matches.filter((m) => m.status === 'LIVE');
-        if (liveMatches.length > 0) {
-          matchContext = '\n\nMatchs en direct : ' + liveMatches
-            .map((m) => `${m.homeTeam} ${m.homeScore}-${m.awayScore} ${m.awayTeam} (${m.minute}')`)
-            .join(', ');
+        if (matches.length > 0) {
+          matchContext = '\n\nMatchs de la compétition (statut, score, minute si en direct) :\n' + matches
+            .map((m) => {
+              const scoreOrStatus =
+                m.status === 'LIVE'      ? `${m.homeScore}-${m.awayScore} (${m.minute}', en direct)` :
+                m.status === 'FINISHED'  ? `${m.homeScore}-${m.awayScore} (terminé)` :
+                m.status === 'SCHEDULED' ? `pas encore joué${m.date ? ` (${m.date})` : ''}` :
+                m.status.toLowerCase();
+              return `${m.homeTeam} vs ${m.awayTeam} : ${scoreOrStatus}`;
+            })
+            .join('\n');
         }
       } catch {
-        // données en direct non critiques pour la réponse du chatbot
+        // données de match non critiques pour la réponse du chatbot
       }
 
       return callGroqAPI(SYSTEM_PROMPT + matchContext, [
