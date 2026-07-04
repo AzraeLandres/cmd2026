@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAuth } from './AuthContext';
 
 interface ProfileContextValue {
   favorites:     string[];
@@ -8,11 +9,13 @@ interface ProfileContextValue {
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
-const STORAGE_KEY = 'cdm_favorites';
+function storageKey(username: string | undefined): string {
+  return `cdm_favorites_${username ?? 'guest'}`;
+}
 
-function loadFavorites(): string[] {
+function loadFavorites(username: string | undefined): string[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(storageKey(username));
     return stored ? (JSON.parse(stored) as string[]) : [];
   } catch {
     return [];
@@ -20,13 +23,20 @@ function loadFavorites(): string[] {
 }
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [favorites, setFavorites] = useState<string[]>(loadFavorites);
+  const { user } = useAuth();
+  const [favorites, setFavorites] = useState<string[]>(() =>
+    loadFavorites(user?.username),
+  );
+
+  useEffect(() => {
+    setFavorites(loadFavorites(user?.username));
+  }, [user?.username]);
 
   function addFavorite(team: string) {
     setFavorites((prev) => {
       if (prev.includes(team)) return prev;
       const updated = [...prev, team];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(storageKey(user?.username), JSON.stringify(updated));
       return updated;
     });
   }
@@ -34,7 +44,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   function removeFavorite(team: string) {
     setFavorites((prev) => {
       const updated = prev.filter((t) => t !== team);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(storageKey(user?.username), JSON.stringify(updated));
       return updated;
     });
   }
