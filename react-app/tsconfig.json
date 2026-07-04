@@ -25,7 +25,8 @@
       "@atoms/*": ["./src/atoms/*"],
       "@molecules/*": ["./src/molecules/*"],
       "@organisms/*": ["./src/organisms/*"],
-      "@interfaces/*": ["./src/interfaces/*"]
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@context/*": ["./src/context/*"]
     }
   },
   "include": ["src"]

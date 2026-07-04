@@ -1,54 +1,15 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { useProfile } from "../ProfileContext";
-import { useAuth } from "../AuthContext";
-import { GET_MATCHES, GET_ALL_BETS } from "../graphql/queries";
-import MatchCard from "../molecules/MatchCard";
-import EmptyState from "../atoms/EmptyState";
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-  minute: number;
-  date: string;
-  stage: string;
-}
-
-interface Bet {
-  matchId: string;
-  homeScore: number;
-  awayScore: number;
-}
-
-function pickFeaturedMatch(matches: Match[]): Match | null {
-  return (
-    matches.find((m) => m.status === "LIVE") ??
-    matches.find((m) => m.status === "SCHEDULED") ??
-    matches[0] ??
-    null
-  );
-}
-
-function pickTeamMatch(matches: Match[], team: string): Match | null {
-  return (
-    matches.find(
-      (m) =>
-        (m.homeTeam === team || m.awayTeam === team) && m.status === "LIVE",
-    ) ??
-    matches.find(
-      (m) =>
-        (m.homeTeam === team || m.awayTeam === team) &&
-        m.status === "SCHEDULED",
-    ) ??
-    null
-  );
-}
+import { useHeader } from "@context/HeaderContext";
+import { useProfile } from "@context/ProfileContext";
+import { useAuth } from "@context/AuthContext";
+import { GET_MATCHES, GET_ALL_BETS } from "@graphql/queries";
+import MatchCard from "@molecules/MatchCard";
+import EmptyState from "@atoms/EmptyState";
+import Match from "@interfaces/Match.ts";
+import Bet from "@interfaces/Bet.ts";
+import { pickFeaturedMatch, pickTeamMatch } from "@/utils/matchHelpers";
 
 export default function Home() {
   const setHeader = useHeader();

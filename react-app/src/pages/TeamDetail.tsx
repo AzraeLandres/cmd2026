@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { GET_MATCHES } from "../graphql/queries";
-import MatchCard from "../molecules/MatchCard";
-import EmptyState from "../atoms/EmptyState";
+import { useHeader } from "@context/HeaderContext";
+import { GET_MATCHES } from "@graphql/queries";
+import MatchCard from "@molecules/MatchCard";
+import EmptyState from "@atoms/EmptyState";
 
 interface Player {
   name: string;

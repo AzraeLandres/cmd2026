@@ -1,28 +1,19 @@
-import { createContext, useContext, useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import TopBar    from './organisms/TopBar';
-import BottomNav from './organisms/BottomNav';
-import ChatBot   from './organisms/ChatBot';
-import ModeBanner from './organisms/ModeBanner';
-import { useAuth }  from './AuthContext';
-import AuthPage from './pages/AuthPage';
-
-interface HeaderState {
-  title:      string;
-  showBack:   boolean;
-  liveMinute: number | null;
-}
-
-type SetHeader = (state: Partial<HeaderState>) => void;
-
-const HeaderContext = createContext<SetHeader>(() => {});
-export function useHeader(): SetHeader { return useContext(HeaderContext); }
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import HeaderState from "@interfaces/HeaderState";
+import TopBar from "@organisms/TopBar";
+import BottomNav from "@organisms/BottomNav";
+import ChatBot from "@organisms/ChatBot";
+import ModeBanner from "@organisms/ModeBanner";
+import { useAuth } from "@context/AuthContext";
+import AuthPage from "@pages/AuthPage";
+import { HeaderContext } from "@context/HeaderContext";
 
 export default function App() {
   const { user } = useAuth();
   const [header, setHeader] = useState<HeaderState>({
-    title:      'Coupe du Monde 2026',
-    showBack:   false,
+    title: "Coupe du Monde 2026",
+    showBack: false,
     liveMinute: null,
   });
 
@@ -34,10 +25,16 @@ export default function App() {
 
   return (
     <HeaderContext.Provider value={updateHeader}>
-      <a href="#main-content" className="skip-link">Aller au contenu principal</a>
-      <div className="app-shell">
+      <a href="#main-content" className="skip-link">
+        Aller au contenu principal
+      </a>
+      <div className="bg-bg min-h-screen flex flex-col">
         <ModeBanner />
-        <TopBar title={header.title} showBack={header.showBack} liveMinute={header.liveMinute} />
+        <TopBar
+          title={header.title}
+          showBack={header.showBack}
+          liveMinute={header.liveMinute}
+        />
         <main className="view" id="main-content" tabIndex={-1}>
           <Outlet />
         </main>

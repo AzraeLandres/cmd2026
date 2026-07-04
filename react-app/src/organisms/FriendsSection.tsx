@@ -1,26 +1,31 @@
-import { useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_FRIENDS } from '../graphql/queries';
-import { SEND_FRIEND_REQUEST, ACCEPT_FRIEND_REQUEST, REMOVE_FRIEND } from '../graphql/mutations';
+import { useState } from "react";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_FRIENDS } from "@graphql/queries";
+import {
+  SEND_FRIEND_REQUEST,
+  ACCEPT_FRIEND_REQUEST,
+  REMOVE_FRIEND,
+} from "@graphql/mutations";
 
 interface FriendEntry {
-  id:          number;
-  username:    string;
+  id: number;
+  username: string;
   displayName: string;
-  status:      string;
+  status: string;
 }
 
 export default function FriendsSection() {
-  const [query,     setQuery]     = useState('');
+  const [query, setQuery] = useState("");
   const [addStatus, setAddStatus] = useState<Record<string, string>>({});
 
   const { data, refetch } = useQuery<{ friends: FriendEntry[] }>(GET_FRIENDS);
-  const friends         = data?.friends ?? [];
-  const acceptedFriends = friends.filter((f) => f.status === 'accepted');
-  const pendingReceived = friends.filter((f) => f.status === 'pending');
+  const friends = data?.friends ?? [];
+  const acceptedFriends = friends.filter((f) => f.status === "accepted");
+  const pendingReceived = friends.filter((f) => f.status === "pending");
 
-  const [sendRequest, { loading: sendingRequest }]   = useMutation(SEND_FRIEND_REQUEST);
-  const [acceptRequest]  = useMutation(ACCEPT_FRIEND_REQUEST);
+  const [sendRequest, { loading: sendingRequest }] =
+    useMutation(SEND_FRIEND_REQUEST);
+  const [acceptRequest] = useMutation(ACCEPT_FRIEND_REQUEST);
   const [removeFriend, { loading: removing }] = useMutation(REMOVE_FRIEND);
 
   async function handleSearch(e: React.FormEvent) {
@@ -29,9 +34,9 @@ export default function FriendsSection() {
     if (trimmed.length < 2) return;
     try {
       await sendRequest({ variables: { username: trimmed } });
-      setAddStatus((prev) => ({ ...prev, [trimmed]: 'sent' }));
+      setAddStatus((prev) => ({ ...prev, [trimmed]: "sent" }));
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Erreur';
+      const msg = err instanceof Error ? err.message : "Erreur";
       setAddStatus((prev) => ({ ...prev, [trimmed]: msg }));
     }
   }
@@ -60,7 +65,10 @@ export default function FriendsSection() {
           className="friends-search-input"
           type="search"
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setAddStatus({}); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setAddStatus({});
+          }}
           placeholder="Pseudo exact de l'ami"
           minLength={2}
           aria-label="Pseudo à ajouter"
@@ -72,16 +80,20 @@ export default function FriendsSection() {
           aria-busy={sendingRequest}
           aria-label="Envoyer la demande"
         >
-          {sendingRequest ? '…' : '+ Ajouter'}
+          {sendingRequest ? "…" : "+ Ajouter"}
         </button>
       </form>
 
       {addStatus[query.trim()] && (
         <p
-          className={addStatus[query.trim()] === 'sent' ? 'form-success' : 'form-error'}
+          className={
+            addStatus[query.trim()] === "sent" ? "form-success" : "form-error"
+          }
           role="status"
         >
-          {addStatus[query.trim()] === 'sent' ? 'Demande envoyée !' : addStatus[query.trim()]}
+          {addStatus[query.trim()] === "sent"
+            ? "Demande envoyée !"
+            : addStatus[query.trim()]}
         </p>
       )}
 
@@ -92,10 +104,12 @@ export default function FriendsSection() {
             {pendingReceived.map((u) => (
               <li key={u.id} className="friend-row">
                 <div className="friend-info">
-                  <span className="friend-name">{u.displayName || u.username}</span>
+                  <span className="friend-name">
+                    {u.displayName || u.username}
+                  </span>
                   <span className="friend-handle">@{u.username}</span>
                 </div>
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: "flex", gap: 6 }}>
                   <button
                     className="btn-friend-accept"
                     onClick={() => handleAccept(u.id)}
@@ -122,7 +136,9 @@ export default function FriendsSection() {
           {acceptedFriends.map((u) => (
             <li key={u.id} className="friend-row">
               <div className="friend-info">
-                <span className="friend-name">{u.displayName || u.username}</span>
+                <span className="friend-name">
+                  {u.displayName || u.username}
+                </span>
                 <span className="friend-handle">@{u.username}</span>
               </div>
               <button
@@ -139,7 +155,10 @@ export default function FriendsSection() {
       )}
 
       {acceptedFriends.length === 0 && pendingReceived.length === 0 && (
-        <p className="muted" style={{ fontSize: '0.85rem', margin: '6px 0 10px' }}>
+        <p
+          className="muted"
+          style={{ fontSize: "0.85rem", margin: "6px 0 10px" }}
+        >
           Aucun ami pour l'instant.
         </p>
       )}

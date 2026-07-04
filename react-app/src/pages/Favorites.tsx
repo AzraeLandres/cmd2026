@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { useProfile } from "../ProfileContext";
-import { GET_MATCHES } from "../graphql/queries";
-import MatchCard from "../molecules/MatchCard";
-import EmptyState from "../atoms/EmptyState";
+import { useHeader } from "@context/HeaderContext";
+import { useProfile } from "@context/ProfileContext";
+import { GET_MATCHES } from "@graphql/queries";
+import MatchCard from "@molecules/MatchCard";
+import EmptyState from "@atoms/EmptyState";
 
 export default function Favorites() {
   const setHeader = useHeader();

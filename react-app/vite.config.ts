@@ -7,11 +7,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@atoms/*": path.resolve(__dirname, "./src/atoms/*"),
-      "@molecules/*": path.resolve(__dirname, "./src/molecules/*"),
-      "@organisms/*": path.resolve(__dirname, "./src/organisms/*"),
-      "@graphql/*": path.resolve(__dirname, "./src/graphql/*"),
-      "@interfaces/*": path.resolve(__dirname, "./src/interfaces/*"),
+      "@atoms": path.resolve(__dirname, "./src/atoms"),
+      "@molecules": path.resolve(__dirname, "./src/molecules"),
+      "@organisms": path.resolve(__dirname, "./src/organisms"),
+      "@graphql": path.resolve(__dirname, "./src/graphql"),
+      "@interfaces": path.resolve(__dirname, "./src/interfaces"),
+      "@context": path.resolve(__dirname, "./src/context"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
     },
   },
   server: {

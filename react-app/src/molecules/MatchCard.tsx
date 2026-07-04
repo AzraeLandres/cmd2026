@@ -1,38 +1,38 @@
-import { Link } from 'react-router-dom';
-import StatusPill from '../atoms/StatusPill';
+import { Link } from "react-router-dom";
+import StatusPill from "@atoms/StatusPill";
 
 interface Match {
-  id:        string;
-  homeTeam:  string;
-  awayTeam:  string;
+  id: string;
+  homeTeam: string;
+  awayTeam: string;
   homeScore: number;
   awayScore: number;
-  status:    string;
-  minute:    number;
-  date?:     string;
+  status: string;
+  minute: number;
+  date?: string;
 }
 
 function formatScheduled(dateStr: string): string {
   try {
-    return new Date(dateStr).toLocaleString('fr-FR', {
-      day:    '2-digit',
-      month:  '2-digit',
-      hour:   '2-digit',
-      minute: '2-digit',
+    return new Date(dateStr).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
-    return '';
+    return "";
   }
 }
 
 function midLabel(match: Match): string {
-  if (match.status === 'LIVE' || match.status === 'SUSPENDED') {
+  if (match.status === "LIVE" || match.status === "SUSPENDED") {
     return `${match.homeScore} - ${match.awayScore} (${match.minute}')`;
   }
-  if (match.status === 'FINISHED') {
+  if (match.status === "FINISHED") {
     return `${match.homeScore} - ${match.awayScore}`;
   }
-  return match.date ? formatScheduled(match.date) : '';
+  return match.date ? formatScheduled(match.date) : "";
 }
 
 export default function MatchCard({ match }: { match: Match }) {

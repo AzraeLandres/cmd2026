@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { GET_MATCH } from "../graphql/queries";
-import ScoreBlock from "../organisms/ScoreBlock";
-import EventRow from "../molecules/EventRow";
-import TeamLineup from "../molecules/TeamLineup";
-import EmptyState from "../atoms/EmptyState";
+import { useHeader } from "@context/HeaderContext";
+import { GET_MATCH } from "@graphql/queries";
+import ScoreBlock from "@organisms/ScoreBlock";
+import EventRow from "@molecules/EventRow";
+import TeamLineup from "@molecules/TeamLineup";
+import EmptyState from "@atoms/EmptyState";
 import BetSection from "./BetSection";
 
 const POLL_INTERVAL_MS = 5_000;

@@ -1,5 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
-  --primary: #166534;
+  --primary: #ffffff;
   --secondary: #16a34a;
   --accent: #f59e0b;
   --live: #e63946;
@@ -13,6 +16,8 @@
   --shadow: 0 2px 10px rgba(15, 23, 42, 0.07);
 
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --app-bg: #f4f6f9;
 }
 
 *,
@@ -25,9 +30,6 @@ html,
 body {
   margin: 0;
   padding: 0;
-
-  background: #052e0f;
-  color: var(--text);
 }
 
 #root {
