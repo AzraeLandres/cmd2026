@@ -37,39 +37,25 @@ export async function verifyPassword(
 }
 
 export function createToken(userId: number): string {
-  const payload = `${userId}.${Date.now()}`;
+  const expiry = Date.now() + TOKEN_EXPIRY_MS;
+  const payload = `${userId}:${expiry}`;
   const signature = createHmac("sha256", config.tokenSecret)
     .update(payload)
     .digest("hex");
-  return `${Buffer.from(payload).toString("base64url")}.${signature}`;
+  return `${payload}:${signature}`;
 }
 
-export function verifyToken(token: string): number | null {
+export function verifyToken(token: string | null): number | null {
   if (!token) return null;
-
-  const lastDotIndex = token.lastIndexOf(".");
-  if (lastDotIndex < 0) return null;
-
-  const encodedPayload = token.slice(0, lastDotIndex);
-  const receivedSignature = token.slice(lastDotIndex + 1);
-
-  let payload: string;
-  try {
-    payload = Buffer.from(encodedPayload, "base64url").toString();
-  } catch {
-    return null;
-  }
-
-  const expectedSignature = createHmac("sha256", config.tokenSecret)
+  const parts = token.split(":");
+  if (parts.length !== 3) return null;
+  const [userIdStr, expiryStr, signature] = parts;
+  const payload = `${userIdStr}:${expiryStr}`;
+  const expected = createHmac("sha256", config.tokenSecret)
     .update(payload)
     .digest("hex");
-
-  if (receivedSignature !== expectedSignature) return null;
-
-  const [userIdStr, timestampStr] = payload.split(".");
-  const isExpired = Date.now() - parseInt(timestampStr, 10) > TOKEN_EXPIRY_MS;
-  if (isExpired) return null;
-
+  if (signature !== expected) return null;
+  if (Date.now() > parseInt(expiryStr, 10)) return null;
   return parseInt(userIdStr, 10);
 }
 
