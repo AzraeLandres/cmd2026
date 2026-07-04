@@ -6,14 +6,14 @@ export default {
       colors: {
         primary: "#166534",
         secondary: "#16a34a",
-        accent: "#f59e0b",
+        accent: "#EC941C",
         live: "#e63946",
-        bg: "#f4f6f9",
+        bg: "#004E00",
         surface: "#ffffff",
         text: "#1c2331",
         textMuted: "#6b7280",
         border: "#e2e5eb",
-        "app-bg": "000000",
+        appBg: "#004E00",
       },
       borderRadius: {
         DEFAULT: "var(--radius)",

@@ -52,9 +52,9 @@ export default function AuthPage() {
   const isRegister = mode === "register";
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-bg px-4">
-      <div className="w-full max-w-sm bg-surface rounded-app shadow-app p-6 flex flex-col gap-5">
-        <h1 className="text-xl font-bold text-center">
+    <div className="flex items-center justify-center min-h-screen bg-appBg">
+      <div className="w-full max-w-sm bg-surface rounded-md shadow-app py-8 px-6 flex flex-col gap-5">
+        <h1 className="text-xl font-bold text-center text-accent">
           {isRegister ? "Inscription" : "Connexion"}
         </h1>
 
@@ -66,7 +66,7 @@ export default function AuthPage() {
           {isRegister && (
             <div className="flex flex-col gap-1">
               <label htmlFor="auth-displayname" className="text-sm font-medium">
-                Prénom / pseudo affiché
+                Prénom
               </label>
               <input
                 id="auth-displayname"
@@ -118,9 +118,9 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-primary text-white rounded-lg py-2 font-semibold text-sm disabled:opacity-50"
+            className="bg-accent text-white rounded-lg py-2 font-semibold text-sm disabled:opacity-50"
           >
-            {loading ? "…" : isRegister ? "Créer mon compte" : "Se connecter"}
+            {loading ? "…" : isRegister ? "S'inscrire" : "Se connecter"}
           </button>
         </form>
 

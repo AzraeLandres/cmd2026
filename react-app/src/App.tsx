@@ -28,14 +28,18 @@ export default function App() {
       <a href="#main-content" className="skip-link">
         Aller au contenu principal
       </a>
-      <div className="bg-bg min-h-screen flex flex-col">
+      <div className="min-h-screen py-4 flex flex-col ">
         <ModeBanner />
         <TopBar
           title={header.title}
           showBack={header.showBack}
           liveMinute={header.liveMinute}
         />
-        <main className="view" id="main-content" tabIndex={-1}>
+        <main
+          className="flex-1 w-full max-w-shell mx-auto px-4 py-4 "
+          id="main-content"
+          tabIndex={-1}
+        >
           <Outlet />
         </main>
         <BottomNav />
