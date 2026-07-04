@@ -9,8 +9,19 @@ import { INPUT } from "@utils/ui";
 
 export default function Profile() {
   const { favorites, addFavorite, removeFavorite } = useProfile();
-  const { user, logout } = useAuth();
+  const { user, logout, deleteAccount } = useAuth();
   const [search, setSearch] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await deleteAccount();
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const { data } = useQuery(GET_MATCHES);
   const allTeams = useMemo(() => {
@@ -112,6 +123,39 @@ export default function Profile() {
       >
         Se déconnecter
       </button>
+
+      {confirmDelete ? (
+        <div className="mt-3 rounded border border-live/40 bg-live/5 p-3 text-center">
+          <p className="mb-2 text-sm font-semibold text-live">
+            Supprimer définitivement votre compte ? Cette action est
+            irréversible.
+          </p>
+          <div className="flex gap-2">
+            <button
+              className="flex-1 rounded border border-border py-2 text-sm font-semibold text-text"
+              onClick={() => setConfirmDelete(false)}
+              disabled={deleting}
+            >
+              Annuler
+            </button>
+            <button
+              className="flex-1 rounded bg-live py-2 text-sm font-bold text-white disabled:opacity-50"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+              aria-busy={deleting}
+            >
+              {deleting ? "…" : "Confirmer la suppression"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          className="mt-3 w-full rounded border border-live py-3 text-sm font-bold text-live hover:bg-live/5"
+          onClick={() => setConfirmDelete(true)}
+        >
+          Supprimer mon compte
+        </button>
+      )}
     </>
   );
 }

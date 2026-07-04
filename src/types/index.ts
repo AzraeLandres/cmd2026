@@ -56,6 +56,7 @@ export interface Friend {
   username:    string;
   displayName: string;
   status:      string;
+  direction:   'incoming' | 'outgoing';
 }
 
 export interface AuthPayload {

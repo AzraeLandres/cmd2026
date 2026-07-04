@@ -7,6 +7,7 @@ import {
 } from "react";
 import { apolloClient } from "../apollo";
 import { GET_ME } from "@graphql/queries";
+import { DELETE_ACCOUNT } from "@graphql/mutations";
 
 interface AuthUser {
   id: number;
@@ -19,6 +20,7 @@ interface AuthContextValue {
   token: string | null;
   login: (token: string, user: AuthUser) => void;
   logout: () => void;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -61,8 +63,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     apolloClient.clearStore();
   }
 
+  async function deleteAccount() {
+    await apolloClient.mutate({ mutation: DELETE_ACCOUNT });
+    logout();
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, login, logout, deleteAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );

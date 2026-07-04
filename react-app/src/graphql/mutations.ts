@@ -18,6 +18,12 @@ export const LOGIN = gql`
   }
 `;
 
+export const DELETE_ACCOUNT = gql`
+  mutation DeleteAccount {
+    deleteAccount
+  }
+`;
+
 export const PLACE_BET = gql`
   mutation PlaceBet($matchId: String!, $homeScore: Int!, $awayScore: Int!) {
     placeBet(matchId: $matchId, homeScore: $homeScore, awayScore: $awayScore) {

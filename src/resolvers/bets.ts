@@ -29,17 +29,31 @@ function rowToBet(row: Record<string, unknown>): Bet {
   };
 }
 
+async function getVisibleUserIds(userId: number): Promise<number[]> {
+  const pool = requireDb();
+  const friendsResult = await pool.query(
+    `SELECT CASE WHEN requester_id = $1 THEN addressee_id ELSE requester_id END AS friend_id
+     FROM friends
+     WHERE (requester_id = $1 OR addressee_id = $1) AND status = 'accepted'`,
+    [userId]
+  );
+  const friendIds = friendsResult.rows.map((r: Record<string, unknown>) => Number(r.friend_id));
+  return [userId, ...friendIds];
+}
+
 export const betsResolvers = {
   Query: {
     async bets(_: unknown, args: { matchId: string }, ctx: GraphQLContext): Promise<Bet[]> {
-      requireAuth(ctx);
+      const user = requireAuth(ctx);
       const pool = requireDb();
+      const visibleUserIds = await getVisibleUserIds(user.id);
+
       const result = await pool.query(
         `SELECT b.match_id, b.home_score, b.away_score, u.id AS user_id, u.username, u.display_name
          FROM bets b JOIN users u ON u.id = b.user_id
-         WHERE b.match_id = $1
+         WHERE b.match_id = $1 AND b.user_id = ANY($2)
          ORDER BY b.updated_at DESC`,
-        [args.matchId]
+        [args.matchId, visibleUserIds]
       );
       return result.rows.map(rowToBet);
     },
@@ -47,22 +61,14 @@ export const betsResolvers = {
     async allBets(_: unknown, _args: unknown, ctx: GraphQLContext): Promise<Bet[]> {
       const user = requireAuth(ctx);
       const pool = requireDb();
-
-      const friendsResult = await pool.query(
-        `SELECT CASE WHEN requester_id = $1 THEN addressee_id ELSE requester_id END AS friend_id
-         FROM friends
-         WHERE (requester_id = $1 OR addressee_id = $1) AND status = 'accepted'`,
-        [user.id]
-      );
-      const friendIds = friendsResult.rows.map((r: Record<string, unknown>) => r.friend_id);
-      const allUserIds = [user.id, ...friendIds];
+      const visibleUserIds = await getVisibleUserIds(user.id);
 
       const result = await pool.query(
         `SELECT b.match_id, b.home_score, b.away_score, u.id AS user_id, u.username, u.display_name
          FROM bets b JOIN users u ON u.id = b.user_id
          WHERE b.user_id = ANY($1)
          ORDER BY b.updated_at DESC`,
-        [allUserIds]
+        [visibleUserIds]
       );
       return result.rows.map(rowToBet);
     },

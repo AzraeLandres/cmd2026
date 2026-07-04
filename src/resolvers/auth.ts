@@ -3,6 +3,11 @@ import { db } from '../lib/db';
 import { GraphQLContext, AuthPayload } from '../types';
 import { GraphQLError } from 'graphql';
 
+function requireAuth(ctx: GraphQLContext) {
+  if (!ctx.user) throw new GraphQLError('Connexion requise', { extensions: { code: 'UNAUTHENTICATED' } });
+  return ctx.user;
+}
+
 interface RegisterArgs {
   username:    string;
   password:    string;
@@ -65,6 +70,14 @@ export const authResolvers = {
       const user  = { id: row.id, username: row.username, displayName: row.display_name };
       const token = createToken(user.id);
       return { token, user };
+    },
+
+    async deleteAccount(_: unknown, _args: unknown, ctx: GraphQLContext): Promise<boolean> {
+      const user = requireAuth(ctx);
+      if (!db) throw new GraphQLError('Base de données non configurée', { extensions: { code: 'UNAVAILABLE' } });
+
+      await db.query('DELETE FROM users WHERE id = $1', [user.id]);
+      return true;
     },
   },
 };

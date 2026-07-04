@@ -53,6 +53,7 @@ export const typeDefs = `
     username: String!
     displayName: String!
     status: String!
+    direction: String!
   }
 
   type Query {
@@ -73,6 +74,7 @@ export const typeDefs = `
       displayName: String!
     ): AuthPayload!
     login(username: String!, password: String!): AuthPayload!
+    deleteAccount: Boolean!
     placeBet(matchId: String!, homeScore: Int!, awayScore: Int!): Bet!
     sendFriendRequest(username: String!): Friend!
     acceptFriendRequest(friendId: Int!): Friend!

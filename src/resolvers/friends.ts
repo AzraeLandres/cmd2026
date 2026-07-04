@@ -21,7 +21,8 @@ export const friendsResolvers = {
       const result = await pool.query(
         `SELECT
            u.id, u.username, u.display_name,
-           f.status
+           f.status,
+           CASE WHEN f.requester_id = $1 THEN 'outgoing' ELSE 'incoming' END AS direction
          FROM friends f
          JOIN users u ON u.id = CASE
            WHEN f.requester_id = $1 THEN f.addressee_id
@@ -37,6 +38,7 @@ export const friendsResolvers = {
         username:    String(row.username),
         displayName: String(row.display_name),
         status:      String(row.status),
+        direction:   row.direction === 'outgoing' ? 'outgoing' : 'incoming',
       }));
     },
   },
@@ -66,7 +68,13 @@ export const friendsResolvers = {
         [user.id, target.id, 'pending']
       );
 
-      return { id: target.id, username: target.username, displayName: target.display_name, status: 'pending' };
+      return {
+        id: target.id,
+        username: target.username,
+        displayName: target.display_name,
+        status: 'pending',
+        direction: 'outgoing',
+      };
     },
 
     async acceptFriendRequest(_: unknown, args: { friendId: number }, ctx: GraphQLContext): Promise<Friend> {
@@ -86,7 +94,13 @@ export const friendsResolvers = {
         [args.friendId]
       );
       const friend = friendResult.rows[0];
-      return { id: friend.id, username: friend.username, displayName: friend.display_name, status: 'accepted' };
+      return {
+        id: friend.id,
+        username: friend.username,
+        displayName: friend.display_name,
+        status: 'accepted',
+        direction: 'incoming',
+      };
     },
 
     async removeFriend(_: unknown, args: { friendId: number }, ctx: GraphQLContext): Promise<boolean> {

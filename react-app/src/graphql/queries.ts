@@ -48,6 +48,6 @@ export const GET_ALL_BETS = gql`
 
 export const GET_FRIENDS = gql`
   query GetFriends {
-    friends { id username displayName status }
+    friends { id username displayName status direction }
   }
 `;
