@@ -8,7 +8,9 @@ import { CARD, INPUT } from "@utils/ui";
 export default function Teams() {
   const [query, setQuery] = useState("");
 
-  const { data, loading, error } = useQuery(GET_MATCHES);
+  const { data, loading, error } = useQuery(GET_MATCHES, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const allTeams = useMemo(() => {
     const matches = data?.matches ?? [];

@@ -20,9 +20,12 @@ export default function Home() {
     data: matchData,
     loading: matchLoading,
     error: matchError,
-  } = useQuery<{ matches: Match[] }>(GET_MATCHES);
+  } = useQuery<{ matches: Match[] }>(GET_MATCHES, {
+    fetchPolicy: "cache-and-network",
+  });
   const { data: betsData } = useQuery<{ allBets: Bet[] }>(GET_ALL_BETS, {
     skip: !user,
+    fetchPolicy: "cache-and-network",
   });
 
   const matches = matchData?.matches ?? [];

@@ -24,6 +24,7 @@ export default function FriendsSection() {
   const [addStatus, setAddStatus] = useState<Record<string, string>>({});
 
   const { data, refetch } = useQuery<{ friends: FriendEntry[] }>(GET_FRIENDS, {
+    fetchPolicy: "cache-and-network",
     pollInterval: FRIENDS_POLL_INTERVAL_MS,
   });
   const friends = data?.friends ?? [];

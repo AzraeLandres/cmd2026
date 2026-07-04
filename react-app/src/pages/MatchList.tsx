@@ -23,6 +23,7 @@ export default function MatchList() {
 
   const { data, loading, error } = useQuery(GET_MATCHES, {
     variables: { phase },
+    fetchPolicy: "cache-and-network",
   });
   const matches = data?.matches ?? [];
   const visible =

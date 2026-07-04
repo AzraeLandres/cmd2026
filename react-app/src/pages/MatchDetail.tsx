@@ -18,7 +18,7 @@ export default function MatchDetail() {
 
   const { data, loading, error, startPolling, stopPolling } = useQuery(
     GET_MATCH,
-    { variables: { id }, skip: !id },
+    { variables: { id }, skip: !id, fetchPolicy: "cache-and-network" },
   );
 
   const match = data?.match;

@@ -29,7 +29,9 @@ interface PlayerStat {
 export default function TeamDetail() {
   const { name } = useParams<{ name: string }>();
 
-  const { data, loading, error } = useQuery(GET_MATCHES);
+  const { data, loading, error } = useQuery(GET_MATCHES, {
+    fetchPolicy: "cache-and-network",
+  });
 
   if (error)
     return (

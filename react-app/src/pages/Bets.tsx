@@ -43,10 +43,10 @@ function computePoints(bet: BetEntry, match: Match): number | null {
 export default function Bets() {
   const { data: matchData, loading: matchLoading } = useQuery<{
     matches: Match[];
-  }>(GET_MATCHES);
+  }>(GET_MATCHES, { fetchPolicy: "cache-and-network" });
   const { data: betsData, loading: betsLoading } = useQuery<{
     allBets: BetEntry[];
-  }>(GET_ALL_BETS);
+  }>(GET_ALL_BETS, { fetchPolicy: "cache-and-network" });
 
   const loading = matchLoading || betsLoading;
   if (loading) return <EmptyState>Chargement…</EmptyState>;
