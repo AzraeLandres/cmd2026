@@ -61,47 +61,49 @@ export default function Profile() {
           />
         </div>
 
-        {favorites.length > 0 && (
-          <ul className="m-0 mb-3 list-none p-0">
-            {favorites.map((team) => (
-              <li
-                key={team}
-                className="flex items-center justify-between border-b border-border py-2"
-              >
-                <span className="text-sm font-semibold">{team}</span>
-                <button
-                  onClick={() => removeFavorite(team)}
-                  aria-label={`Retirer ${team} des favoris`}
-                  className="border-none bg-transparent p-0 text-lg text-textMuted hover:text-live"
-                >
-                  🗑
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {filteredTeams.length > 0 && (
-          <ul className="m-0 list-none p-0">
-            {filteredTeams
-              .filter((t) => !favorites.includes(t))
-              .map((team) => (
+        <div className="max-h-80 overflow-y-auto pr-1">
+          {favorites.length > 0 && (
+            <ul className="m-0 mb-3 list-none p-0">
+              {favorites.map((team) => (
                 <li
                   key={team}
-                  className="flex items-center justify-between border-b border-border py-1.5"
+                  className="flex items-center justify-between border-b border-border py-2"
                 >
-                  <span className="text-sm">{team}</span>
+                  <span className="text-sm font-semibold">{team}</span>
                   <button
-                    onClick={() => addFavorite(team)}
-                    aria-label={`Ajouter ${team} aux favoris`}
-                    className="border-none bg-transparent p-0 text-base text-primary hover:text-primary/70"
+                    onClick={() => removeFavorite(team)}
+                    aria-label={`Retirer ${team} des favoris`}
+                    className="border-none bg-transparent p-0 text-lg text-textMuted hover:text-live"
                   >
-                    ＋
+                    🗑
                   </button>
                 </li>
               ))}
-          </ul>
-        )}
+            </ul>
+          )}
+
+          {filteredTeams.length > 0 && (
+            <ul className="m-0 list-none p-0">
+              {filteredTeams
+                .filter((t) => !favorites.includes(t))
+                .map((team) => (
+                  <li
+                    key={team}
+                    className="flex items-center justify-between border-b border-border py-1.5"
+                  >
+                    <span className="text-sm">{team}</span>
+                    <button
+                      onClick={() => addFavorite(team)}
+                      aria-label={`Ajouter ${team} aux favoris`}
+                      className="border-none bg-transparent p-0 text-base text-primary hover:text-primary/70"
+                    >
+                      ＋
+                    </button>
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
       </section>
 
       <button
