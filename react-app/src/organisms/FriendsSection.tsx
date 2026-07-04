@@ -14,16 +14,26 @@ interface FriendEntry {
   username: string;
   displayName: string;
   status: string;
+  direction: "incoming" | "outgoing";
 }
+
+const FRIENDS_POLL_INTERVAL_MS = 15_000;
 
 export default function FriendsSection() {
   const [query, setQuery] = useState("");
   const [addStatus, setAddStatus] = useState<Record<string, string>>({});
 
-  const { data, refetch } = useQuery<{ friends: FriendEntry[] }>(GET_FRIENDS);
+  const { data, refetch } = useQuery<{ friends: FriendEntry[] }>(GET_FRIENDS, {
+    pollInterval: FRIENDS_POLL_INTERVAL_MS,
+  });
   const friends = data?.friends ?? [];
   const acceptedFriends = friends.filter((f) => f.status === "accepted");
-  const pendingReceived = friends.filter((f) => f.status === "pending");
+  const pendingReceived = friends.filter(
+    (f) => f.status === "pending" && f.direction === "incoming",
+  );
+  const pendingSent = friends.filter(
+    (f) => f.status === "pending" && f.direction === "outgoing",
+  );
 
   const [sendRequest, { loading: sendingRequest }] =
     useMutation(SEND_FRIEND_REQUEST);
@@ -138,6 +148,30 @@ export default function FriendsSection() {
         </div>
       )}
 
+      {pendingSent.length > 0 && (
+        <div>
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-textMuted">
+            Demandes envoyées
+          </div>
+          <ul className="m-0 mb-3 list-none p-0">
+            {pendingSent.map((u) => (
+              <li
+                key={u.id}
+                className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+              >
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-text">
+                    {u.displayName || u.username}
+                  </span>
+                  <span className="text-xs text-textMuted">@{u.username}</span>
+                </div>
+                <span className="text-xs text-textMuted">En attente…</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {acceptedFriends.length > 0 && (
         <ul className="m-0 list-none p-0" aria-label="Mes amis">
           {acceptedFriends.map((u) => (
@@ -164,7 +198,9 @@ export default function FriendsSection() {
         </ul>
       )}
 
-      {acceptedFriends.length === 0 && pendingReceived.length === 0 && (
+      {acceptedFriends.length === 0 &&
+        pendingReceived.length === 0 &&
+        pendingSent.length === 0 && (
         <p className="my-1.5 text-sm text-textMuted">
           Aucun ami pour l'instant.
         </p>

@@ -52,22 +52,35 @@ function normalizeStatus(rawStatus: string): MatchStatus {
   return 'SCHEDULED';
 }
 
+// L'API football-data.org (offre gratuite) ne fournit pas la minute en direct :
+// on l'estime à partir de l'heure de coup d'envoi quand elle est absente.
+function resolveMinute(status: MatchStatus, providedMinute: unknown, utcDate: string): number {
+  if (typeof providedMinute === 'number' && providedMinute > 0) return providedMinute;
+  if (status !== 'LIVE' || !utcDate) return 0;
+
+  const elapsed = Math.floor((Date.now() - new Date(utcDate).getTime()) / 60_000);
+  return Math.min(90, Math.max(0, elapsed));
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeMatchList(matches: any[]): Match[] {
-  return matches.map((m) => ({
-    id:        String(m.id),
-    homeTeam:  m.homeTeam?.name ?? '',
-    awayTeam:  m.awayTeam?.name ?? '',
-    homeScore: m.score?.fullTime?.home ?? 0,
-    awayScore: m.score?.fullTime?.away ?? 0,
-    status:    normalizeStatus(m.status),
-    minute:    m.minute ?? 0,
-    phase:     m.stage,
-    stage:     m.stage,
-    venue:     m.venue ?? '',
-    date:      m.utcDate,
-    events:    [],
-  }));
+  return matches.map((m) => {
+    const status = normalizeStatus(m.status);
+    return {
+      id:        String(m.id),
+      homeTeam:  m.homeTeam?.name ?? '',
+      awayTeam:  m.awayTeam?.name ?? '',
+      homeScore: m.score?.fullTime?.home ?? 0,
+      awayScore: m.score?.fullTime?.away ?? 0,
+      status,
+      minute:    resolveMinute(status, m.minute, m.utcDate),
+      phase:     m.stage,
+      stage:     m.stage,
+      venue:     m.venue ?? '',
+      date:      m.utcDate,
+      events:    [],
+    };
+  });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,14 +102,15 @@ function normalizeMatchDetail(m: any): Match {
     })),
   ];
 
+  const status = normalizeStatus(m.status);
   return {
     id:        String(m.id),
     homeTeam:  m.homeTeam?.name ?? '',
     awayTeam:  m.awayTeam?.name ?? '',
     homeScore: m.score?.fullTime?.home ?? 0,
     awayScore: m.score?.fullTime?.away ?? 0,
-    status:    normalizeStatus(m.status),
-    minute:    m.minute ?? 0,
+    status,
+    minute:    resolveMinute(status, m.minute, m.utcDate),
     phase:     m.stage,
     stage:     m.stage,
     venue:     m.venue ?? '',

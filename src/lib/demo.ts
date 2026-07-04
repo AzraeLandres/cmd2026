@@ -13,7 +13,8 @@ function pickRandomPlayer(teamName: string): string | null {
   return squad[Math.floor(Math.random() * squad.length)];
 }
 
-let mockMatches: Match[] = JSON.parse(fs.readFileSync(config.mockFile, 'utf-8'));
+const rawMockMatches: Match[] = JSON.parse(fs.readFileSync(config.mockFile, 'utf-8'));
+let mockMatches: Match[] = rawMockMatches.map((m) => ({ ...m, id: String(m.id) }));
 
 function simulateLiveTick(): void {
   for (const match of mockMatches) {

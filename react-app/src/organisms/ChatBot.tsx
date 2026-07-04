@@ -108,7 +108,7 @@ export default function ChatBot() {
                   "max-w-[80%] rounded-2xl px-3 py-2 text-sm " +
                   (m.role === "user"
                     ? "self-end bg-primary text-white"
-                    : "self-start bg-bg text-text")
+                    : "self-start border border-border bg-white text-primary")
                 }
               >
                 {m.content}
@@ -116,7 +116,7 @@ export default function ChatBot() {
             ))}
             {loading && (
               <div
-                className="flex items-center gap-1 self-start rounded-2xl bg-bg px-3 py-2"
+                className="flex items-center gap-1 self-start rounded-2xl border border-border bg-white px-3 py-2"
                 aria-label="L'assistant rédige une réponse"
               >
                 {[0, 150, 300].map((delay) => (
@@ -135,7 +135,7 @@ export default function ChatBot() {
           <div className="flex items-center gap-2 border-t border-border p-3">
             <input
               ref={inputRef}
-              className="flex-1 rounded-full border border-border bg-bg px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+              className="flex-1 rounded-full border border-border bg-white px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
