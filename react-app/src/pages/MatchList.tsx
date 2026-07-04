@@ -1,21 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { GET_MATCHES } from "../graphql/queries";
-import MatchCard from "../molecules/MatchCard";
-import Chip from "../atoms/Chip";
-import EmptyState from "../atoms/EmptyState";
-
-const PHASE_LABELS: Record<string, string> = {
-  GROUP_STAGE: "Phase de groupes",
-  LAST_32: "32e de finale",
-  LAST_16: "8e de finale",
-  QUARTER_FINALS: "Quarts de finale",
-  SEMI_FINALS: "Demi-finales",
-  THIRD_PLACE: "Match pour la 3e place",
-  FINAL: "Finale",
-};
+import { GET_MATCHES } from "@graphql/queries";
+import MatchCard from "@molecules/MatchCard";
+import Chip from "@atoms/Chip";
+import EmptyState from "@atoms/EmptyState";
 
 const FILTERS: [string, string][] = [
   ["ALL", "Toutes"],
@@ -26,17 +15,11 @@ const FILTERS: [string, string][] = [
 
 export default function MatchList() {
   const { phase } = useParams<{ phase: string }>();
-  const setHeader = useHeader();
   const [active, setActive] = useState("ALL");
 
   useEffect(() => {
-    setHeader({
-      title: PHASE_LABELS[phase ?? ""] ?? "Matchs",
-      showBack: true,
-      liveMinute: null,
-    });
     setActive("ALL");
-  }, [phase, setHeader]);
+  }, [phase]);
 
   const { data, loading, error } = useQuery(GET_MATCHES, {
     variables: { phase },
@@ -58,7 +41,7 @@ export default function MatchList() {
       <div
         role="tablist"
         aria-label="Filtrer les matchs"
-        style={{ display: "flex", gap: 8, marginBottom: 14, flexWrap: "wrap" }}
+        className="mb-3.5 flex flex-wrap gap-2"
       >
         {FILTERS.map(([value, label]) => (
           <Chip

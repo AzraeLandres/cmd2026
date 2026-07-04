@@ -1,67 +1,20 @@
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "../App";
-import { useProfile } from "../ProfileContext";
-import { useAuth } from "../AuthContext";
-import { GET_MATCHES, GET_ALL_BETS } from "../graphql/queries";
-import MatchCard from "../molecules/MatchCard";
-import EmptyState from "../atoms/EmptyState";
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-  minute: number;
-  date: string;
-  stage: string;
-}
-
-interface Bet {
-  matchId: string;
-  homeScore: number;
-  awayScore: number;
-}
-
-function pickFeaturedMatch(matches: Match[]): Match | null {
-  return (
-    matches.find((m) => m.status === "LIVE") ??
-    matches.find((m) => m.status === "SCHEDULED") ??
-    matches[0] ??
-    null
-  );
-}
-
-function pickTeamMatch(matches: Match[], team: string): Match | null {
-  return (
-    matches.find(
-      (m) =>
-        (m.homeTeam === team || m.awayTeam === team) && m.status === "LIVE",
-    ) ??
-    matches.find(
-      (m) =>
-        (m.homeTeam === team || m.awayTeam === team) &&
-        m.status === "SCHEDULED",
-    ) ??
-    null
-  );
-}
+import { useProfile } from "@context/ProfileContext";
+import { useAuth } from "@context/AuthContext";
+import { GET_MATCHES, GET_ALL_BETS } from "@graphql/queries";
+import MatchCard from "@molecules/MatchCard";
+import EmptyState from "@atoms/EmptyState";
+import SectionTitle from "@atoms/SectionTitle";
+import Match from "@interfaces/Match.ts";
+import Bet from "@interfaces/Bet.ts";
+import { pickFeaturedMatch, pickTeamMatch } from "@/utils/matchHelpers";
+import { CARD } from "@utils/ui";
 
 export default function Home() {
-  const setHeader = useHeader();
   const { favorites } = useProfile();
   const { user } = useAuth();
-
-  useEffect(() => {
-    setHeader({
-      title: "Coupe du Monde 2026",
-      showBack: false,
-      liveMinute: null,
-    });
-  }, [setHeader]);
 
   const {
     data: matchData,
@@ -72,36 +25,45 @@ export default function Home() {
     skip: !user,
   });
 
+  const matches = matchData?.matches ?? [];
+  const myBets = betsData?.allBets ?? [];
+
+  const { featured, upcomingBets, upcomingUnbetted } = useMemo(() => {
+    const matchById = new Map(matches.map((m) => [m.id, m]));
+    const myBetIds = new Set(myBets.map((b) => b.matchId));
+
+    const upcomingBets = myBets
+      .map((bet) => {
+        const match = matchById.get(bet.matchId);
+        return match ? { ...bet, match } : null;
+      })
+      .filter(
+        (b): b is Bet & { match: Match } =>
+          b !== null && b.match.status === "SCHEDULED",
+      )
+      .slice(0, 5);
+
+    const upcomingUnbetted = matches
+      .filter((m) => m.status === "SCHEDULED" && !myBetIds.has(m.id))
+      .slice(0, 3);
+
+    return {
+      featured: pickFeaturedMatch(matches),
+      upcomingBets,
+      upcomingUnbetted,
+    };
+  }, [matches, myBets]);
+
   if (matchError)
     return (
       <EmptyState role="alert">Impossible de charger les matchs.</EmptyState>
     );
   if (matchLoading) return <EmptyState>Chargement…</EmptyState>;
 
-  const matches = matchData?.matches ?? [];
-  const myBets = betsData?.allBets ?? [];
-  const myBetIds = new Set(myBets.map((b) => b.matchId));
-  const featured = pickFeaturedMatch(matches);
-
-  const upcomingBets = myBets
-    .map((bet) => {
-      const match = matches.find((m) => m.id === bet.matchId);
-      return match ? { ...bet, match } : null;
-    })
-    .filter(
-      (b): b is Bet & { match: Match } =>
-        b !== null && b.match.status === "SCHEDULED",
-    )
-    .slice(0, 5);
-
-  const upcomingUnbetted = matches
-    .filter((m) => m.status === "SCHEDULED" && !myBetIds.has(m.id))
-    .slice(0, 3);
-
   return (
     <>
-      <section className="home-section" aria-label="Match du moment">
-        <h2 className="section-title">Le match du moment</h2>
+      <section className="mb-6" aria-label="Match du moment">
+        <SectionTitle>Le match du moment</SectionTitle>
         {featured ? (
           <MatchCard match={featured} />
         ) : (
@@ -115,11 +77,11 @@ export default function Home() {
           featured && teamMatch && teamMatch.id === featured.id;
         return (
           <section
-            className="home-section"
+            className="mb-6"
             key={team}
             aria-label={`Prochain match de ${team}`}
           >
-            <h2 className="section-title">{team} — prochain match</h2>
+            <SectionTitle>{team} — prochain match</SectionTitle>
             {!teamMatch && (
               <EmptyState>Aucun match trouvé pour {team}.</EmptyState>
             )}
@@ -132,28 +94,31 @@ export default function Home() {
       })}
 
       {favorites.length === 0 && (
-        <Link to="/profil" className="card cta-card">
+        <Link
+          to="/profil"
+          className={`${CARD} border-dashed border-primary bg-primary/5 text-sm font-semibold text-primary`}
+        >
           Choisissez vos équipes favorites dans votre profil.
         </Link>
       )}
 
       {upcomingBets.length > 0 && (
-        <section className="home-section" aria-label="Mes paris à venir">
-          <h2 className="section-title">🎯 Mes paris à venir</h2>
+        <section className="mb-6" aria-label="Mes paris à venir">
+          <SectionTitle>Mes paris à venir</SectionTitle>
           {upcomingBets.map(({ matchId, homeScore, awayScore, match: m }) => (
             <Link
               key={matchId}
               to={`/match/${matchId}`}
-              className="card home-bet-card"
+              className={`${CARD} flex items-center justify-between`}
             >
-              <div className="home-bet-teams">
+              <div className="flex items-center gap-2 text-sm font-semibold">
                 <span>{m.homeTeam}</span>
-                <span className="home-bet-score">
+                <span className="font-bold text-primary">
                   {homeScore} – {awayScore}
                 </span>
                 <span>{m.awayTeam}</span>
               </div>
-              <div className="muted" style={{ fontSize: "0.82rem" }}>
+              <div className="text-xs text-textMuted">
                 {new Date(m.date).toLocaleDateString("fr-FR", {
                   day: "2-digit",
                   month: "short",
@@ -165,40 +130,35 @@ export default function Home() {
       )}
 
       {upcomingUnbetted.length > 0 && (
-        <section className="home-section" aria-label="Matchs sans pari">
-          <h2 className="section-title">⏳ À parier</h2>
+        <section className="mb-6" aria-label="Matchs sans pari">
+          <SectionTitle>À parier</SectionTitle>
           {upcomingUnbetted.map((m) => (
             <Link
               key={m.id}
               to={`/match/${m.id}`}
-              className="card"
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
+              className={`${CARD} flex items-center justify-between`}
             >
-              <span style={{ fontWeight: 600, fontSize: "0.88rem" }}>
+              <span className="text-sm font-semibold">
                 {m.homeTeam} vs {m.awayTeam}
               </span>
-              <span
-                style={{
-                  color: "var(--primary)",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                }}
-              >
+              <span className="text-xs font-semibold text-primary">
                 Parier →
               </span>
             </Link>
           ))}
-          <Link to="/paris" className="phases-link" style={{ marginTop: 4 }}>
+          <Link
+            to="/paris"
+            className="mt-1 block text-center font-semibold text-primary"
+          >
             Voir le classement ›
           </Link>
         </section>
       )}
 
-      <Link to="/phases" className="card phases-link">
+      <Link
+        to="/phases"
+        className={`${CARD} text-center font-semibold text-primary`}
+      >
         Voir toutes les phases de la compétition ›
       </Link>
     </>

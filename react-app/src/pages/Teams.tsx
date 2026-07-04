@@ -1,17 +1,12 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
-import { useHeader } from '../App';
-import { GET_MATCHES } from '../graphql/queries';
-import EmptyState from '../atoms/EmptyState';
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import { GET_MATCHES } from "@graphql/queries";
+import EmptyState from "@atoms/EmptyState";
+import { CARD, INPUT } from "@utils/ui";
 
 export default function Teams() {
-  const setHeader = useHeader();
-  const [query, setQuery] = useState('');
-
-  useEffect(() => {
-    setHeader({ title: 'Équipes', showBack: false, liveMinute: null });
-  }, [setHeader]);
+  const [query, setQuery] = useState("");
 
   const { data, loading, error } = useQuery(GET_MATCHES);
 
@@ -25,32 +20,41 @@ export default function Teams() {
     return Array.from(teamSet).sort();
   }, [data]);
 
-  if (error)   return <EmptyState role="alert">Impossible de charger les équipes.</EmptyState>;
+  if (error)
+    return (
+      <EmptyState role="alert">Impossible de charger les équipes.</EmptyState>
+    );
   if (loading) return <EmptyState>Chargement…</EmptyState>;
 
-  const filtered = allTeams.filter((t) => t.toLowerCase().includes(query.toLowerCase()));
+  const filtered = allTeams.filter((t) =>
+    t.toLowerCase().includes(query.toLowerCase()),
+  );
 
   return (
     <>
       <input
-        className="search-box"
+        className={`${INPUT} mb-3.5 w-full`}
         type="search"
         placeholder="Rechercher une équipe…"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-label="Rechercher une équipe participante"
       />
-      {filtered.length === 0 && <EmptyState>Aucune équipe ne correspond à votre recherche.</EmptyState>}
+      {filtered.length === 0 && (
+        <EmptyState>Aucune équipe ne correspond à votre recherche.</EmptyState>
+      )}
       <div role="list" aria-label="Liste des équipes">
         {filtered.map((team) => (
           <div role="listitem" key={team}>
             <Link
               to={`/equipe/${encodeURIComponent(team)}`}
-              className="card phase-card"
+              className={`${CARD} flex items-center justify-between`}
               aria-label={`Voir le détail de ${team}`}
             >
-              <div className="title">{team}</div>
-              <span className="chevron" aria-hidden="true">›</span>
+              <div className="text-sm font-semibold">{team}</div>
+              <span className="text-lg text-textMuted" aria-hidden="true">
+                ›
+              </span>
             </Link>
           </div>
         ))}

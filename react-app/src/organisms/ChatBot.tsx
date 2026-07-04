@@ -1,29 +1,32 @@
-import { useEffect, useRef, useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { SEND_CHAT_MESSAGE } from '../graphql/mutations';
+import { useEffect, useRef, useState } from "react";
+import { useMutation } from "@apollo/client";
+import { SEND_CHAT_MESSAGE } from "@graphql/mutations";
 
 interface ChatMessage {
-  role:    'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
 const INTRO: ChatMessage = {
-  role:    'assistant',
-  content: 'Bonjour ! Je suis l\'assistant IA de CDM 2026 Tracker 🏆 Pose-moi tes questions sur les matchs, les scores, les équipes ou le calendrier !',
+  role: "assistant",
+  content:
+    "Bonjour ! Je suis l'assistant IA de CDM 2026 Tracker 🏆 Pose-moi tes questions sur les matchs, les scores, les équipes ou le calendrier !",
 };
 
 export default function ChatBot() {
-  const [open, setOpen]         = useState(false);
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([INTRO]);
-  const [input, setInput]       = useState('');
+  const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef  = useRef<HTMLInputElement>(null);
-  const fabRef    = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fabRef = useRef<HTMLButtonElement>(null);
 
-  const [sendMessage, { loading }] = useMutation<{ sendChatMessage: string }>(SEND_CHAT_MESSAGE);
+  const [sendMessage, { loading }] = useMutation<{ sendChatMessage: string }>(
+    SEND_CHAT_MESSAGE,
+  );
 
   useEffect(() => {
-    if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (open) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open]);
 
   useEffect(() => {
@@ -38,58 +41,101 @@ export default function ChatBot() {
     const text = input.trim();
     if (!text || loading) return;
 
-    const userMessage: ChatMessage = { role: 'user', content: text };
+    const userMessage: ChatMessage = { role: "user", content: text };
     setMessages((prev) => [...prev, userMessage]);
-    setInput('');
+    setInput("");
 
     try {
       const { data } = await sendMessage({ variables: { message: text } });
-      const reply = data?.sendChatMessage ?? 'Désolé, aucune réponse reçue.';
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      const reply = data?.sendChatMessage ?? "Désolé, aucune réponse reçue.";
+      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: 'Désolé, une erreur est survenue. Vérifiez que GROQ_API_KEY est configuré.' },
+        {
+          role: "assistant",
+          content:
+            "Désolé, une erreur est survenue. Vérifiez que GROQ_API_KEY est configuré.",
+        },
       ]);
     }
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
-    if (e.key === 'Escape') setOpen(false);
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+    if (e.key === "Escape") setOpen(false);
   }
 
   return (
     <>
       {open && (
-        <div className="chat-window" role="dialog" aria-modal="true" aria-labelledby="chat-title">
-          <div className="chat-header">
-            <span className="chat-title" id="chat-title">🏆 Assistant CDM 2026</span>
-            <button className="chat-close" onClick={() => setOpen(false)} aria-label="Fermer le chat">✕</button>
+        <div
+          className="fixed bottom-36 right-4 z-50 flex max-h-[70vh] w-80 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-app"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="chat-title"
+        >
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <span
+              className="text-sm font-semibold text-text"
+              id="chat-title"
+            >
+              🏆 Assistant CDM 2026
+            </span>
+            <button
+              className="text-lg leading-none text-textMuted hover:text-text"
+              onClick={() => setOpen(false)}
+              aria-label="Fermer le chat"
+            >
+              ✕
+            </button>
           </div>
 
           <div
-            className="chat-messages"
+            className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
             role="log"
             aria-live="polite"
             aria-atomic="false"
             aria-label="Conversation avec l'assistant"
           >
             {messages.map((m, i) => (
-              <div key={i} className={`chat-msg chat-msg-${m.role}`}>{m.content}</div>
+              <div
+                key={i}
+                className={
+                  "max-w-[80%] rounded-2xl px-3 py-2 text-sm " +
+                  (m.role === "user"
+                    ? "self-end bg-primary text-white"
+                    : "self-start bg-bg text-text")
+                }
+              >
+                {m.content}
+              </div>
             ))}
             {loading && (
-              <div className="chat-msg chat-msg-assistant chat-typing" aria-label="L'assistant rédige une réponse">
-                <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
+              <div
+                className="flex items-center gap-1 self-start rounded-2xl bg-bg px-3 py-2"
+                aria-label="L'assistant rédige une réponse"
+              >
+                {[0, 150, 300].map((delay) => (
+                  <span
+                    key={delay}
+                    className="h-1.5 w-1.5 animate-bounce rounded-full bg-textMuted"
+                    style={{ animationDelay: `${delay}ms` }}
+                    aria-hidden="true"
+                  />
+                ))}
               </div>
             )}
             <div ref={bottomRef} />
           </div>
 
-          <div className="chat-input-row">
+          <div className="flex items-center gap-2 border-t border-border p-3">
             <input
               ref={inputRef}
-              className="chat-input"
+              className="flex-1 rounded-full border border-border bg-bg px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -99,7 +145,7 @@ export default function ChatBot() {
               aria-label="Votre message"
             />
             <button
-              className="chat-send"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-white disabled:opacity-40"
               onClick={send}
               disabled={loading || !input.trim()}
               aria-label="Envoyer le message"
@@ -112,13 +158,16 @@ export default function ChatBot() {
 
       <button
         ref={fabRef}
-        className={'chat-fab' + (open ? ' chat-fab-open' : '')}
+        className={
+          "fixed bottom-20 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl text-white shadow-app transition-transform hover:scale-105 " +
+          (open ? "scale-95" : "")
+        }
         onClick={() => setOpen((prev) => !prev)}
-        aria-label={open ? 'Fermer le chat' : 'Ouvrir l\'assistant IA'}
+        aria-label={open ? "Fermer le chat" : "Ouvrir l'assistant IA"}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        {open ? '✕' : '💬'}
+        {open ? "✕" : "💬"}
       </button>
     </>
   );

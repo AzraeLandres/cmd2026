@@ -28,16 +28,27 @@ export default function EventRow({ event: ev }: { event: MatchEvent }) {
   const isCard = ev.type !== 'GOAL';
   return (
     <div
-      className="event-row"
+      className="flex items-center gap-2 border-b border-border py-1.5 last:border-0"
       role="listitem"
       aria-label={`${ev.minute}e minute — ${eventLabel(ev)}`}
     >
-      <span className={'event-minute' + (isCard ? ' card' : '')}>{ev.minute}'</span>
-      <span className="event-icon" aria-hidden="true">{eventIcon(ev)}</span>
-      <div className="event-main">
-        <div className="event-title">{eventLabel(ev)}</div>
+      <span
+        className={
+          'w-8 shrink-0 text-xs font-semibold ' +
+          (isCard ? 'text-live' : 'text-textMuted')
+        }
+      >
+        {ev.minute}'
+      </span>
+      <span className="shrink-0 text-base" aria-hidden="true">
+        {eventIcon(ev)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm text-text">{eventLabel(ev)}</div>
         {ev.type === 'GOAL' && ev.assist && (
-          <div className="event-assist">Passe décisive : {ev.assist}</div>
+          <div className="text-xs text-textMuted">
+            Passe décisive : {ev.assist}
+          </div>
         )}
       </div>
     </div>
