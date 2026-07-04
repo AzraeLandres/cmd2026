@@ -7,7 +7,7 @@
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "test": "node --test test/*.js"
+    "test": "tsc && node --test test/*.js"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
