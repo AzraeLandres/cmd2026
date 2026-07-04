@@ -6,6 +6,7 @@ import {
   ACCEPT_FRIEND_REQUEST,
   REMOVE_FRIEND,
 } from "@graphql/mutations";
+import { SECTION, SECTION_TITLE, INPUT, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
 
 interface FriendEntry {
   id: number;
@@ -52,17 +53,17 @@ export default function FriendsSection() {
   }
 
   return (
-    <section className="friends-section" aria-label="Amis">
-      <h2 className="section-title">Amis</h2>
+    <section className={SECTION} aria-label="Amis">
+      <h2 className={SECTION_TITLE}>Amis</h2>
 
       <form
-        className="friends-search-bar"
+        className="mb-3 flex gap-2"
         onSubmit={handleSearch}
         role="search"
         aria-label="Ajouter un ami par pseudo"
       >
         <input
-          className="friends-search-input"
+          className={`${INPUT} flex-1`}
           type="search"
           value={query}
           onChange={(e) => {
@@ -75,7 +76,7 @@ export default function FriendsSection() {
         />
         <button
           type="submit"
-          className="friends-search-btn"
+          className="shrink-0 rounded bg-primary px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
           disabled={sendingRequest || query.trim().length < 2}
           aria-busy={sendingRequest}
           aria-label="Envoyer la demande"
@@ -87,7 +88,7 @@ export default function FriendsSection() {
       {addStatus[query.trim()] && (
         <p
           className={
-            addStatus[query.trim()] === "sent" ? "form-success" : "form-error"
+            addStatus[query.trim()] === "sent" ? FORM_SUCCESS : FORM_ERROR
           }
           role="status"
         >
@@ -99,26 +100,31 @@ export default function FriendsSection() {
 
       {pendingReceived.length > 0 && (
         <div role="status" aria-live="polite">
-          <div className="friends-group-label">Demandes reçues</div>
-          <ul className="friends-list">
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-textMuted">
+            Demandes reçues
+          </div>
+          <ul className="m-0 mb-3 list-none p-0">
             {pendingReceived.map((u) => (
-              <li key={u.id} className="friend-row">
-                <div className="friend-info">
-                  <span className="friend-name">
+              <li
+                key={u.id}
+                className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+              >
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-text">
                     {u.displayName || u.username}
                   </span>
-                  <span className="friend-handle">@{u.username}</span>
+                  <span className="text-xs text-textMuted">@{u.username}</span>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div className="flex gap-1.5">
                   <button
-                    className="btn-friend-accept"
+                    className="rounded bg-primary px-2.5 py-1 text-xs font-semibold text-white"
                     onClick={() => handleAccept(u.id)}
                     aria-label={`Accepter ${u.username}`}
                   >
                     Accepter
                   </button>
                   <button
-                    className="btn-friend-trash"
+                    className="rounded border border-border px-2 py-1 text-sm text-textMuted hover:text-live"
                     onClick={() => handleRemove(u.id)}
                     aria-label={`Refuser ${u.username}`}
                   >
@@ -132,17 +138,20 @@ export default function FriendsSection() {
       )}
 
       {acceptedFriends.length > 0 && (
-        <ul className="friends-list" aria-label="Mes amis">
+        <ul className="m-0 list-none p-0" aria-label="Mes amis">
           {acceptedFriends.map((u) => (
-            <li key={u.id} className="friend-row">
-              <div className="friend-info">
-                <span className="friend-name">
+            <li
+              key={u.id}
+              className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+            >
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-text">
                   {u.displayName || u.username}
                 </span>
-                <span className="friend-handle">@{u.username}</span>
+                <span className="text-xs text-textMuted">@{u.username}</span>
               </div>
               <button
-                className="btn-friend-trash"
+                className="rounded border border-border px-2 py-1 text-sm text-textMuted hover:text-live disabled:opacity-50"
                 disabled={removing}
                 onClick={() => handleRemove(u.id)}
                 aria-label={`Supprimer ${u.username}`}
@@ -155,10 +164,7 @@ export default function FriendsSection() {
       )}
 
       {acceptedFriends.length === 0 && pendingReceived.length === 0 && (
-        <p
-          className="muted"
-          style={{ fontSize: "0.85rem", margin: "6px 0 10px" }}
-        >
+        <p className="my-1.5 text-sm text-textMuted">
           Aucun ami pour l'instant.
         </p>
       )}

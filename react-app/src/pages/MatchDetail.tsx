@@ -26,7 +26,6 @@ export default function MatchDetail() {
     if (!match) return;
     setHeader({
       title: `${match.homeTeam} vs ${match.awayTeam}`,
-      showBack: true,
       liveMinute: match.status === "LIVE" ? match.minute : null,
     });
 
@@ -37,14 +36,7 @@ export default function MatchDetail() {
     }
   }, [match, setHeader, startPolling, stopPolling]);
 
-  useEffect(() => {
-    setHeader({
-      title: "Chargement du match…",
-      showBack: true,
-      liveMinute: null,
-    });
-    return () => stopPolling();
-  }, [setHeader, stopPolling]);
+  useEffect(() => stopPolling, [stopPolling]);
 
   if (error) return <EmptyState role="alert">Match introuvable.</EmptyState>;
   if (loading) return <EmptyState>Chargement…</EmptyState>;
@@ -65,8 +57,8 @@ export default function MatchDetail() {
       <ScoreBlock match={match} />
 
       {allEvents.length > 0 && (
-        <div className="events">
-          <h2>Événements</h2>
+        <div className="mb-4">
+          <h2 className="mb-2 text-sm text-text">Événements</h2>
           {allEvents.map((ev: any, i: number) => (
             <EventRow key={i} event={ev} />
           ))}
@@ -75,8 +67,8 @@ export default function MatchDetail() {
 
       {match.lineups &&
         (match.lineups.home?.length > 0 || match.lineups.away?.length > 0) && (
-          <div className="lineups">
-            <h2>Compositions</h2>
+          <div className="mb-4">
+            <h2 className="mb-2 text-sm text-text">Compositions</h2>
             <TeamLineup
               team={match.homeTeam}
               players={match.lineups.home ?? []}

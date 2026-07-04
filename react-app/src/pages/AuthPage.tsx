@@ -124,7 +124,7 @@ export default function AuthPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-muted">
+        <p className="text-center text-sm text-textMuted">
           {isRegister ? (
             <>
               J'ai déjà un compte.{" "}

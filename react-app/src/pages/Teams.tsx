@@ -1,17 +1,12 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "@context/HeaderContext";
 import { GET_MATCHES } from "@graphql/queries";
 import EmptyState from "@atoms/EmptyState";
+import { CARD, INPUT } from "@utils/ui";
 
 export default function Teams() {
-  const setHeader = useHeader();
   const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    setHeader({ title: "Équipes", showBack: false, liveMinute: null });
-  }, [setHeader]);
 
   const { data, loading, error } = useQuery(GET_MATCHES);
 
@@ -38,7 +33,7 @@ export default function Teams() {
   return (
     <>
       <input
-        className="search-box"
+        className={`${INPUT} mb-3.5 w-full`}
         type="search"
         placeholder="Rechercher une équipe…"
         value={query}
@@ -53,11 +48,11 @@ export default function Teams() {
           <div role="listitem" key={team}>
             <Link
               to={`/equipe/${encodeURIComponent(team)}`}
-              className="card phase-card"
+              className={`${CARD} flex items-center justify-between`}
               aria-label={`Voir le détail de ${team}`}
             >
-              <div className="title">{team}</div>
-              <span className="chevron" aria-hidden="true">
+              <div className="text-sm font-semibold">{team}</div>
+              <span className="text-lg text-textMuted" aria-hidden="true">
                 ›
               </span>
             </Link>

@@ -1,19 +1,13 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "@context/HeaderContext";
 import { useProfile } from "@context/ProfileContext";
 import { GET_MATCHES } from "@graphql/queries";
 import MatchCard from "@molecules/MatchCard";
 import EmptyState from "@atoms/EmptyState";
+import { SECTION, SECTION_TITLE } from "@utils/ui";
 
 export default function Favorites() {
-  const setHeader = useHeader();
   const { favorites } = useProfile();
-
-  useEffect(() => {
-    setHeader({ title: "Favoris", showBack: false, liveMinute: null });
-  }, [setHeader]);
 
   const { data, loading, error } = useQuery(GET_MATCHES, {
     skip: favorites.length === 0,
@@ -45,12 +39,8 @@ export default function Favorites() {
             m.homeTeam === team || m.awayTeam === team,
         );
         return (
-          <section
-            key={team}
-            className="home-section"
-            aria-label={`Matchs de ${team}`}
-          >
-            <h2 className="section-title">{team}</h2>
+          <section key={team} className={SECTION} aria-label={`Matchs de ${team}`}>
+            <h2 className={SECTION_TITLE}>{team}</h2>
             {teamMatches.length === 0 ? (
               <EmptyState>Aucun match pour {team}.</EmptyState>
             ) : (

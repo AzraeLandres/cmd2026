@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "@context/AuthContext";
 import { GET_BETS } from "@graphql/queries";
 import { PLACE_BET } from "@graphql/mutations";
+import { SECTION, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
 
 interface Match {
   homeTeam: string;
@@ -94,28 +95,22 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
   }
 
   return (
-    <section className="bet-section" aria-label="Paris des amis">
-      <h2>🎯 Paris des amis</h2>
+    <section className={SECTION} aria-label="Paris des amis">
+      <h2 className="mb-3 text-sm text-text">🎯 Paris des amis</h2>
 
       {matchStatus !== "FINISHED" && user && (
         <form
-          className="bet-form"
+          className="mb-3 flex flex-wrap items-center gap-2"
           onSubmit={handleSubmit}
           aria-label="Placer mon pari"
         >
           {match && (
-            <span
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--text-muted)",
-                marginRight: 6,
-              }}
-            >
+            <span className="mr-1.5 text-sm text-textMuted">
               {match.homeTeam}
             </span>
           )}
           <input
-            className="bet-score-input"
+            className="w-14 rounded border border-border bg-surface px-1.5 py-2 text-center text-lg font-bold text-text focus:outline-none focus:ring-2 focus:ring-primary"
             type="number"
             min="0"
             max="20"
@@ -124,9 +119,9 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
             aria-label={`Score de ${match?.homeTeam ?? "l'équipe domicile"}`}
             placeholder="0"
           />
-          <span className="bet-separator">–</span>
+          <span className="text-lg font-bold text-textMuted">–</span>
           <input
-            className="bet-score-input"
+            className="w-14 rounded border border-border bg-surface px-1.5 py-2 text-center text-lg font-bold text-text focus:outline-none focus:ring-2 focus:ring-primary"
             type="number"
             min="0"
             max="20"
@@ -136,21 +131,14 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
             placeholder="0"
           />
           {match && (
-            <span
-              style={{
-                fontSize: "0.85rem",
-                color: "var(--text-muted)",
-                marginLeft: 6,
-              }}
-            >
+            <span className="ml-1.5 text-sm text-textMuted">
               {match.awayTeam}
             </span>
           )}
           <button
             type="submit"
-            className="btn-primary"
+            className="rounded bg-primary px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
             disabled={placing}
-            style={{ marginTop: 0, padding: "8px 16px", fontSize: "0.88rem" }}
             aria-busy={placing}
           >
             {placing ? "…" : "Parier"}
@@ -159,41 +147,40 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
       )}
 
       {!user && matchStatus !== "FINISHED" && (
-        <p style={{ fontSize: "0.88rem", color: "var(--text-muted)" }}>
-          Connectez-vous pour parier.
-        </p>
+        <p className="text-sm text-textMuted">Connectez-vous pour parier.</p>
       )}
 
       {formError && (
-        <div className="form-error" role="alert">
+        <div className={FORM_ERROR} role="alert">
           {formError}
         </div>
       )}
       {saved && (
-        <div className="form-success" role="status">
+        <div className={FORM_SUCCESS} role="status">
           Pari enregistré !
         </div>
       )}
 
       {bets.length === 0 ? (
-        <div
-          className="muted"
-          style={{ fontSize: "0.88rem", paddingBottom: 8 }}
-        >
+        <div className="pb-2 text-sm text-textMuted">
           Aucun pari pour ce match. Soyez le premier !
         </div>
       ) : (
-        <ul className="bet-list" aria-label="Paris des participants">
+        <ul className="m-0 list-none p-0" aria-label="Paris des participants">
           {bets.map((bet, i) => {
             const result = match ? evaluateBet(bet, match) : null;
             return (
-              <li className="bet-item" key={i}>
-                <span className="bet-user">
+              <li
+                className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+                key={i}
+              >
+                <span className="text-sm font-semibold text-text">
                   {bet.displayName || bet.username}
                 </span>
                 <span
                   className={
-                    "bet-score" + (result === "exact" ? " bet-correct" : "")
+                    "text-sm font-bold " +
+                    (result === "exact" ? "text-secondary" : "text-primary")
                   }
                   aria-label={`Parie ${bet.homeScore} – ${bet.awayScore}`}
                 >

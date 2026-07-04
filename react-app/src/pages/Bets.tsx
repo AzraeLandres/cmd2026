@@ -1,9 +1,14 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "@context/HeaderContext";
 import { GET_ALL_BETS, GET_MATCHES } from "@graphql/queries";
 import EmptyState from "@atoms/EmptyState";
+import {
+  SECTION_TITLE,
+  DATA_TABLE,
+  DATA_TABLE_TH,
+  DATA_TABLE_TD,
+  DATA_TABLE_NUM,
+} from "@utils/ui";
 
 interface BetEntry {
   matchId: string;
@@ -36,12 +41,6 @@ function computePoints(bet: BetEntry, match: Match): number | null {
 }
 
 export default function Bets() {
-  const setHeader = useHeader();
-
-  useEffect(() => {
-    setHeader({ title: "Paris", showBack: false, liveMinute: null });
-  }, [setHeader]);
-
   const { data: matchData, loading: matchLoading } = useQuery<{
     matches: Match[];
   }>(GET_MATCHES);
@@ -77,56 +76,57 @@ export default function Bets() {
 
   return (
     <>
-      <h2 className="section-title">Classement</h2>
+      <h2 className={SECTION_TITLE}>Classement</h2>
       {sorted.length === 0 ? (
         <EmptyState>Aucun pari enregistré.</EmptyState>
       ) : (
-        <table className="data-table" aria-label="Classement des paris">
+        <table className={DATA_TABLE} aria-label="Classement des paris">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Joueur</th>
-              <th className="num">Points</th>
+              <th className={DATA_TABLE_TH}>#</th>
+              <th className={DATA_TABLE_TH}>Joueur</th>
+              <th className={`${DATA_TABLE_TH} ${DATA_TABLE_NUM}`}>Points</th>
             </tr>
           </thead>
           <tbody>
             {sorted.map(([username, { displayName, points }], index) => (
               <tr key={username}>
-                <td>{index + 1}</td>
-                <td>{displayName || username}</td>
-                <td className="num">{points}</td>
+                <td className={DATA_TABLE_TD}>{index + 1}</td>
+                <td className={DATA_TABLE_TD}>{displayName || username}</td>
+                <td className={`${DATA_TABLE_TD} ${DATA_TABLE_NUM}`}>
+                  {points}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
 
-      <h2 className="section-title" style={{ marginTop: 24 }}>
-        Tous les paris
-      </h2>
+      <h2 className={`${SECTION_TITLE} mt-6`}>Tous les paris</h2>
       {allBets.length === 0 ? (
         <EmptyState>Aucun pari pour l'instant.</EmptyState>
       ) : (
-        <ul className="bet-list">
+        <ul className="m-0 list-none p-0">
           {allBets.map((bet, i) => {
             const match = matchMap.get(bet.matchId);
             return (
-              <li key={i} className="bet-item">
+              <li
+                key={i}
+                className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+              >
                 <div>
-                  <span className="bet-user">
+                  <span className="text-sm font-semibold text-text">
                     {bet.displayName || bet.username}
                   </span>
                   {match && (
-                    <div
-                      style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}
-                    >
+                    <div className="text-xs text-textMuted">
                       <Link to={`/match/${bet.matchId}`}>
                         {match.homeTeam} vs {match.awayTeam}
                       </Link>
                     </div>
                   )}
                 </div>
-                <span className="bet-score">
+                <span className="text-sm font-bold text-primary">
                   {bet.homeScore} – {bet.awayScore}
                 </span>
               </li>

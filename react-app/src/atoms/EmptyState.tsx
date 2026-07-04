@@ -7,7 +7,10 @@ interface Props {
 
 export default function EmptyState({ children, role = 'status' }: Props) {
   return (
-    <div className="empty-state" role={role}>
+    <div
+      className="rounded border border-dashed border-border bg-surface p-4 text-center text-sm text-textMuted"
+      role={role}
+    >
       {children}
     </div>
   );

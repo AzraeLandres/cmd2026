@@ -30,33 +30,43 @@ export default function ScoreBlock({ match }: { match: Match }) {
   return (
     <>
       <div
-        className="score-block"
+        className="mb-2 rounded border border-border bg-surface p-4 text-center shadow-app"
         role="region"
         aria-label={`Score : ${match.homeTeam} ${match.homeScore ?? 0} - ${match.awayScore ?? 0} ${match.awayTeam}`}
       >
-        <div className="score-teams">
-          <div className="score-team-col">{match.homeTeam}</div>
+        <div className="flex items-center justify-center gap-4">
+          <div className="flex-1 truncate text-sm font-semibold text-text">
+            {match.homeTeam}
+          </div>
           <div
-            className="score-value"
+            className="shrink-0 text-2xl font-bold text-text"
             aria-live={isLive ? 'polite' : undefined}
             aria-atomic="true"
           >
             {match.homeScore} - {match.awayScore}
           </div>
-          <div className="score-team-col">{match.awayTeam}</div>
+          <div className="flex-1 truncate text-sm font-semibold text-text">
+            {match.awayTeam}
+          </div>
         </div>
 
         {isLive && (
-          <div className="live-minute" aria-live="polite" aria-atomic="true">
+          <div
+            className="mt-2 text-xs font-semibold text-live"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {match.minute}' — en direct
           </div>
         )}
-        {isFinished && <div className="live-minute muted">Match terminé</div>}
+        {isFinished && (
+          <div className="mt-2 text-xs text-textMuted">Match terminé</div>
+        )}
       </div>
 
-      <div className="info-block">
+      <div className="space-y-0.5 text-center text-xs text-textMuted">
         {match.venue && <div>{match.venue}</div>}
-        {match.date  && <div className="muted">{formatMatchDate(match.date)}</div>}
+        {match.date && <div>{formatMatchDate(match.date)}</div>}
       </div>
     </>
   );

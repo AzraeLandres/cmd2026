@@ -1,20 +1,15 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@apollo/client";
-import { useHeader } from "@context/HeaderContext";
 import { useProfile } from "@context/ProfileContext";
 import { useAuth } from "@context/AuthContext";
 import { GET_MATCHES } from "@graphql/queries";
 import FriendsSection from "@organisms/FriendsSection";
+import { INPUT } from "@utils/ui";
 
 export default function Profile() {
-  const setHeader = useHeader();
   const { favorites, addFavorite, removeFavorite } = useProfile();
   const { user, logout } = useAuth();
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    setHeader({ title: "Profil", showBack: false, liveMinute: null });
-  }, [setHeader]);
 
   const { data } = useQuery(GET_MATCHES);
   const allTeams = useMemo(() => {
@@ -37,25 +32,26 @@ export default function Profile() {
 
   return (
     <>
-      <div className="profile-account-card">
-        <div className="profile-avatar" aria-hidden="true">
+      <div className="mb-5 flex items-center gap-3.5 rounded bg-gradient-to-br from-primary to-secondary p-4 text-white">
+        <div
+          className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-full bg-white/25 text-2xl font-bold"
+          aria-hidden="true"
+        >
           {initial}
         </div>
         <div>
-          <div className="profile-name">{displayLabel}</div>
-          <div className="profile-handle">@{user!.username}</div>
+          <div className="text-lg font-bold">{displayLabel}</div>
+          <div className="text-sm opacity-80">@{user!.username}</div>
         </div>
       </div>
 
       <FriendsSection />
 
       <section aria-label="Équipes favorites">
-        <div className="profile-fav-header">
-          <h2 className="section-title" style={{ margin: 0 }}>
-            Équipes favorites
-          </h2>
+        <div className="mb-2.5 flex items-center justify-between gap-2.5">
+          <h2 className="text-sm text-text">Équipes favorites</h2>
           <input
-            className="profile-fav-search"
+            className={`${INPUT} w-[140px]`}
             type="search"
             placeholder="Rechercher…"
             value={search}
@@ -65,31 +61,17 @@ export default function Profile() {
         </div>
 
         {favorites.length > 0 && (
-          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px" }}>
+          <ul className="m-0 mb-3 list-none p-0">
             {favorites.map((team) => (
               <li
                 key={team}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 0",
-                  borderBottom: "1px solid var(--border)",
-                }}
+                className="flex items-center justify-between border-b border-border py-2"
               >
-                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>
-                  {team}
-                </span>
+                <span className="text-sm font-semibold">{team}</span>
                 <button
                   onClick={() => removeFavorite(team)}
                   aria-label={`Retirer ${team} des favoris`}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "1.1rem",
-                    color: "var(--text-muted)",
-                  }}
+                  className="border-none bg-transparent p-0 text-lg text-textMuted hover:text-live"
                 >
                   🗑
                 </button>
@@ -99,31 +81,19 @@ export default function Profile() {
         )}
 
         {filteredTeams.length > 0 && (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          <ul className="m-0 list-none p-0">
             {filteredTeams
               .filter((t) => !favorites.includes(t))
               .map((team) => (
                 <li
                   key={team}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "6px 0",
-                    borderBottom: "1px solid var(--border)",
-                  }}
+                  className="flex items-center justify-between border-b border-border py-1.5"
                 >
-                  <span style={{ fontSize: "0.88rem" }}>{team}</span>
+                  <span className="text-sm">{team}</span>
                   <button
                     onClick={() => addFavorite(team)}
                     aria-label={`Ajouter ${team} aux favoris`}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      fontSize: "1rem",
-                      color: "var(--primary)",
-                    }}
+                    className="border-none bg-transparent p-0 text-base text-primary hover:text-primary/70"
                   >
                     ＋
                   </button>
@@ -133,7 +103,10 @@ export default function Profile() {
         )}
       </section>
 
-      <button className="btn-logout" onClick={logout}>
+      <button
+        className="mt-6 w-full rounded bg-live py-3 text-sm font-bold text-white hover:bg-live/90"
+        onClick={logout}
+      >
         Se déconnecter
       </button>
     </>
