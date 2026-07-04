@@ -1,0 +1,87 @@
+# docker-compose.yml — CDM 2026 Tracker
+#
+# Services :
+#   db    — PostgreSQL 16 (données persistées dans le volume pgdata)
+#   app   — Serveur Node.js (build multi-stage via Dockerfile)
+#   nginx — Reverse proxy HTTP/HTTPS (ports 80 et 443)
+#
+# Utilisation :
+#   cp .env.example .env   # puis remplir les valeurs
+#   docker compose up -d --build
+
+services:
+
+  # ------------------------------------------------------------------
+  # Base de données PostgreSQL
+  # ------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       cdm2026
+      POSTGRES_USER:     cdm
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cdm -d cdm2026"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  # ------------------------------------------------------------------
+  # Serveur Node.js (back-end + fichiers statiques front-end)
+  # ------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT:                    3000
+      PG_HOST:                 db
+      PG_PORT:                 5432
+      PG_DB:                   cdm2026
+      PG_USER:                 cdm
+      PG_PASSWORD:             ${PG_PASSWORD}
+      TOKEN_SECRET:            ${TOKEN_SECRET}
+      FOOTBALL_DATA_API_KEY:   ${FOOTBALL_DATA_API_KEY:-}
+      GROQ_API_KEY:            ${GROQ_API_KEY:-}
+    networks:
+      - internal
+      - public
+
+  # ------------------------------------------------------------------
+  # Nginx — reverse proxy, compression gzip, cache statique
+  # ------------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - certbot-www:/var/www/certbot:ro
+      - certbot-certs:/etc/letsencrypt:ro
+    depends_on:
+      - app
+    networks:
+      - public
+
+# ------------------------------------------------------------------
+# Volumes et réseaux
+# ------------------------------------------------------------------
+volumes:
+  pgdata:        # données PostgreSQL (persistées entre redémarrages)
+  certbot-www:   # challenge ACME Let's Encrypt
+  certbot-certs: # certificats SSL
+
+networks:
+  internal:  # réseau privé app ↔ db (non exposé)
+  public:    # réseau nginx ↔ app

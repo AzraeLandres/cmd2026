@@ -1,0 +1,223 @@
+[
+  {
+    "id": 1,
+    "phase": "GROUP_STAGE",
+    "phaseLabel": "Phase de groupes",
+    "homeTeam": "France",
+    "awayTeam": "Argentine",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "FINISHED",
+    "minute": 90,
+    "stadium": "Stade MetLife",
+    "city": "East Rutherford",
+    "date": "2026-06-18T21:00:00Z",
+    "events": [
+      { "minute": 23, "type": "GOAL", "team": "France", "player": "K. Mbenza", "assist": "L. Diarra" },
+      { "minute": 54, "type": "GOAL", "team": "Argentine", "player": "J. Fernández", "assist": null, "penalty": true },
+      { "minute": 78, "type": "GOAL", "team": "France", "player": "A. Konaté", "assist": "K. Mbenza" }
+    ],
+    "lineups": {
+      "home": {
+        "formation": "4-3-3",
+        "startingXI": [
+          { "shirtNumber": 1, "name": "A. Lefèvre", "position": "GK" },
+          { "shirtNumber": 2, "name": "Y. Mbida", "position": "DF" },
+          { "shirtNumber": 3, "name": "A. Konaté", "position": "DF" },
+          { "shirtNumber": 4, "name": "S. Caron", "position": "DF" },
+          { "shirtNumber": 5, "name": "L. Diarra", "position": "DF" },
+          { "shirtNumber": 6, "name": "P. Rambert", "position": "MF" },
+          { "shirtNumber": 7, "name": "H. Touré", "position": "MF" },
+          { "shirtNumber": 8, "name": "N. Castel", "position": "MF" },
+          { "shirtNumber": 9, "name": "K. Mbenza", "position": "FW" },
+          { "shirtNumber": 10, "name": "R. Belkacem", "position": "FW" },
+          { "shirtNumber": 11, "name": "T. Auvray", "position": "FW" }
+        ],
+        "bench": [
+          { "shirtNumber": 12, "name": "M. Sangaré", "position": "GK" },
+          { "shirtNumber": 13, "name": "E. Roussel", "position": "DF" },
+          { "shirtNumber": 14, "name": "B. Ferreira", "position": "MF" },
+          { "shirtNumber": 15, "name": "O. Diatta", "position": "FW" }
+        ]
+      },
+      "away": {
+        "formation": "4-4-2",
+        "startingXI": [
+          { "shirtNumber": 1, "name": "D. Aranda", "position": "GK" },
+          { "shirtNumber": 2, "name": "F. Quiroga", "position": "DF" },
+          { "shirtNumber": 3, "name": "L. Benítez", "position": "DF" },
+          { "shirtNumber": 4, "name": "M. Cárdenas", "position": "DF" },
+          { "shirtNumber": 5, "name": "S. Otero", "position": "DF" },
+          { "shirtNumber": 6, "name": "J. Fernández", "position": "MF" },
+          { "shirtNumber": 7, "name": "E. Paredes", "position": "MF" },
+          { "shirtNumber": 8, "name": "G. Ibarra", "position": "MF" },
+          { "shirtNumber": 9, "name": "R. Salinas", "position": "MF" },
+          { "shirtNumber": 10, "name": "N. Acosta", "position": "FW" },
+          { "shirtNumber": 11, "name": "C. Domínguez", "position": "FW" }
+        ],
+        "bench": [
+          { "shirtNumber": 12, "name": "P. Roldán", "position": "GK" },
+          { "shirtNumber": 13, "name": "A. Funes", "position": "DF" },
+          { "shirtNumber": 14, "name": "L. Bazán", "position": "MF" },
+          { "shirtNumber": 15, "name": "H. Giménez", "position": "FW" }
+        ]
+      }
+    }
+  },
+  {
+    "id": 2,
+    "phase": "GROUP_STAGE",
+    "phaseLabel": "Phase de groupes",
+    "homeTeam": "Espagne",
+    "awayTeam": "Maroc",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade AT&T",
+    "city": "Arlington",
+    "date": "2026-06-28T21:00:00Z",
+    "events": []
+  },
+  {
+    "id": 3,
+    "phase": "LAST_32",
+    "phaseLabel": "16e de finale",
+    "homeTeam": "Italie",
+    "awayTeam": "Sénégal",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade Lincoln Financial Field",
+    "city": "Philadelphie",
+    "date": "2026-06-29T18:00:00Z",
+    "events": []
+  },
+  {
+    "id": 4,
+    "phase": "LAST_16",
+    "phaseLabel": "8e de finale",
+    "homeTeam": "Portugal",
+    "awayTeam": "Japon",
+    "homeScore": 1,
+    "awayScore": 1,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade BC Place",
+    "city": "Vancouver",
+    "date": "2026-06-30T18:00:00Z",
+    "events": []
+  },
+  {
+    "id": 5,
+    "phase": "QUARTER_FINALS",
+    "phaseLabel": "Quarts de finale",
+    "homeTeam": "Brésil",
+    "awayTeam": "Allemagne",
+    "homeScore": 2,
+    "awayScore": 1,
+    "status": "LIVE",
+    "minute": 67,
+    "stadium": "Stade MetLife",
+    "city": "East Rutherford",
+    "date": "2026-06-28T21:00:00Z",
+    "events": [
+      { "minute": 34, "type": "GOAL", "team": "Brésil", "player": "G. Almeida", "assist": "R. Castro" },
+      { "minute": 41, "type": "GOAL", "team": "Allemagne", "player": "T. Keller", "assist": "M. Hartmann" },
+      { "minute": 58, "type": "YELLOW_CARD", "team": "Brésil", "player": "D. Souza" },
+      { "minute": 66, "type": "GOAL", "team": "Brésil", "player": "G. Almeida", "assist": null, "penalty": true }
+    ],
+    "lineups": {
+      "home": {
+        "formation": "4-3-3",
+        "startingXI": [
+          { "shirtNumber": 1, "name": "V. Nogueira", "position": "GK" },
+          { "shirtNumber": 2, "name": "E. Tavares", "position": "DF" },
+          { "shirtNumber": 3, "name": "B. Andrade", "position": "DF" },
+          { "shirtNumber": 4, "name": "R. Castro", "position": "DF" },
+          { "shirtNumber": 5, "name": "D. Souza", "position": "DF" },
+          { "shirtNumber": 6, "name": "L. Pereira", "position": "MF" },
+          { "shirtNumber": 7, "name": "G. Almeida", "position": "MF" },
+          { "shirtNumber": 8, "name": "F. Moraes", "position": "MF" },
+          { "shirtNumber": 9, "name": "P. Lima", "position": "FW" },
+          { "shirtNumber": 10, "name": "J. Ramalho", "position": "FW" },
+          { "shirtNumber": 11, "name": "M. Bittencourt", "position": "FW" }
+        ],
+        "bench": [
+          { "shirtNumber": 12, "name": "T. Correia", "position": "GK" },
+          { "shirtNumber": 13, "name": "A. Farias", "position": "DF" },
+          { "shirtNumber": 14, "name": "C. Vieira", "position": "MF" },
+          { "shirtNumber": 15, "name": "I. Barbosa", "position": "FW" }
+        ]
+      },
+      "away": {
+        "formation": "4-2-3-1",
+        "startingXI": [
+          { "shirtNumber": 1, "name": "S. Lindner", "position": "GK" },
+          { "shirtNumber": 2, "name": "P. Vogel", "position": "DF" },
+          { "shirtNumber": 3, "name": "N. Krause", "position": "DF" },
+          { "shirtNumber": 4, "name": "F. Wagner", "position": "DF" },
+          { "shirtNumber": 5, "name": "J. Bauer", "position": "DF" },
+          { "shirtNumber": 6, "name": "M. Hartmann", "position": "MF" },
+          { "shirtNumber": 7, "name": "L. Schubert", "position": "MF" },
+          { "shirtNumber": 8, "name": "T. Keller", "position": "MF" },
+          { "shirtNumber": 9, "name": "D. Brandstetter", "position": "MF" },
+          { "shirtNumber": 10, "name": "O. Reinhardt", "position": "MF" },
+          { "shirtNumber": 11, "name": "R. Eichler", "position": "FW" }
+        ],
+        "bench": [
+          { "shirtNumber": 12, "name": "K. Fromm", "position": "GK" },
+          { "shirtNumber": 13, "name": "B. Sommer", "position": "DF" },
+          { "shirtNumber": 14, "name": "H. Resch", "position": "MF" },
+          { "shirtNumber": 15, "name": "M. Adler", "position": "FW" }
+        ]
+      }
+    }
+  },
+  {
+    "id": 6,
+    "phase": "SEMI_FINALS",
+    "phaseLabel": "Demi-finales",
+    "homeTeam": "Angleterre",
+    "awayTeam": "Pays-Bas",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade SoFi",
+    "city": "Inglewood",
+    "date": "2026-07-07T21:00:00Z",
+    "events": []
+  },
+  {
+    "id": 7,
+    "phase": "THIRD_PLACE",
+    "phaseLabel": "Match pour la 3e place",
+    "homeTeam": "À déterminer",
+    "awayTeam": "À déterminer",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade Hard Rock",
+    "city": "Miami",
+    "date": "2026-07-18T21:00:00Z",
+    "events": []
+  },
+  {
+    "id": 8,
+    "phase": "FINAL",
+    "phaseLabel": "Finale",
+    "homeTeam": "À déterminer",
+    "awayTeam": "À déterminer",
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "SCHEDULED",
+    "minute": 0,
+    "stadium": "Stade MetLife",
+    "city": "East Rutherford",
+    "date": "2026-07-19T21:00:00Z",
+    "events": []
+  }
+]

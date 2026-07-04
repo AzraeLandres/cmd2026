@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances back-end
+        run: npm install
+
+      - name: Tests unitaires
+        run: npm test
+        env:
+          TOKEN_SECRET: ci-test-secret-github-actions
+
+      - name: Compiler TypeScript (back-end)
+        run: npm run build
+
+      - name: Installer les dépendances React
+        run: npm install
+        working-directory: react-app
+
+      - name: Build React + TypeScript
+        run: npm run build
+        working-directory: react-app
+
+  deploy:
+    name: Merge & Deploy
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurer git
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge dev → main
+        run: |
+          git fetch origin || true
+          git checkout main 2>/dev/null || git checkout -b main
+          git merge origin/dev --no-ff -m "chore: merge dev → main [CI]"
+          git push origin main
+
+      - name: Copier les fichiers sur le VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          source:   "./"
+          target:   "/opt/cdm2026"
+
+      - name: Rebuild et redémarrer les conteneurs
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/cdm2026
+            docker-compose up -d --build --remove-orphans
+            docker image prune -f
+            echo "Déployé le $(date)"

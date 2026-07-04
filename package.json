@@ -1,0 +1,28 @@
+{
+  "name": "cdm2026",
+  "version": "1.0.0",
+  "description": "Application de suivi de la Coupe du Monde FIFA 2026",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev":   "tsx watch src/server.ts",
+    "build": "tsc",
+    "test":  "node --test test/"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "express":        "^4.19.2",
+    "graphql":        "^16.9.0",
+    "pg":             "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node":    "^22.0.0",
+    "@types/pg":      "^8.11.6",
+    "tsx":            "^4.15.0",
+    "typescript":     "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
