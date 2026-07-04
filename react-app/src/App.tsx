@@ -40,7 +40,7 @@ export default function App() {
       >
         Aller au contenu principal
       </a>
-      <div className="min-h-screen flex flex-col ">
+      <div className="min-h-screen flex flex-col select-none">
         <ModeBanner />
         <TopBar
           title={header.title}
