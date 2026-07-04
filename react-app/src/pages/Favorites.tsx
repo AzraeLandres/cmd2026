@@ -12,6 +12,7 @@ export default function Favorites() {
 
   const { data, loading, error } = useQuery(GET_MATCHES, {
     skip: favorites.length === 0,
+    fetchPolicy: "cache-and-network",
   });
 
   if (favorites.length === 0) {

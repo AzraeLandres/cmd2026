@@ -54,6 +54,7 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
 
   const { data, refetch } = useQuery<{ bets: BetEntry[] }>(GET_BETS, {
     variables: { matchId },
+    fetchPolicy: "cache-and-network",
     pollInterval,
     onCompleted(d) {
       if (!user) return;

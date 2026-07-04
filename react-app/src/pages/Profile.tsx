@@ -23,7 +23,7 @@ export default function Profile() {
     }
   }
 
-  const { data } = useQuery(GET_MATCHES);
+  const { data } = useQuery(GET_MATCHES, { fetchPolicy: "cache-and-network" });
   const allTeams = useMemo(() => {
     const matches = data?.matches ?? [];
     const teamSet = new Set<string>();
