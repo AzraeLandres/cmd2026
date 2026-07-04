@@ -25,13 +25,10 @@ jobs:
       - name: Installer les dépendances back-end
         run: npm install
 
-      - name: Tests unitaires
+      - name: Compiler TypeScript + tests unitaires
         run: npm test
         env:
           TOKEN_SECRET: ci-test-secret-github-actions
-
-      - name: Compiler TypeScript (back-end)
-        run: npm run build
 
       - name: Installer les dépendances React
         run: npm install
