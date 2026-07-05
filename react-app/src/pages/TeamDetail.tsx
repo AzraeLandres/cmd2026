@@ -11,20 +11,7 @@ import {
   DATA_TABLE_TD,
   DATA_TABLE_NUM,
 } from "@utils/ui";
-
-interface Player {
-  name: string;
-  position?: string;
-  shirtNumber?: number;
-}
-
-interface PlayerStat {
-  name: string;
-  goals: number;
-  assists: number;
-  yellow: number;
-  red: number;
-}
+import { Player, PlayerStat } from "@interfaces/Player.ts";
 
 export default function TeamDetail() {
   const { name } = useParams<{ name: string }>();

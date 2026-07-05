@@ -1,13 +1,4 @@
-interface Match {
-  homeTeam:  string;
-  awayTeam:  string;
-  homeScore: number;
-  awayScore: number;
-  status:    string;
-  minute:    number;
-  date?:     string;
-  venue?:    string;
-}
+import Match from '@interfaces/Match.ts';
 
 function formatMatchDate(dateStr: string): string {
   try {

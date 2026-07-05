@@ -5,23 +5,8 @@ import { GET_BETS } from "@graphql/queries";
 import { PLACE_BET } from "@graphql/mutations";
 import { SECTION, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
 import SectionTitle from "@atoms/SectionTitle";
-
-interface Match {
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-}
-
-interface BetEntry {
-  matchId: string;
-  homeScore: number;
-  awayScore: number;
-  userId: number;
-  username: string;
-  displayName: string;
-}
+import Bet from "@interfaces/Bet.ts";
+import Match from "@interfaces/Match.ts";
 
 interface Props {
   matchId: string;
@@ -31,7 +16,7 @@ interface Props {
 
 type BetResult = "exact" | "winner" | "wrong" | null;
 
-function evaluateBet(bet: BetEntry, match: Match): BetResult {
+function evaluateBet(bet: Bet, match: Match): BetResult {
   if (match.status !== "FINISHED") return null;
   const exactScore =
     bet.homeScore === match.homeScore && bet.awayScore === match.awayScore;
@@ -52,7 +37,7 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
 
   const pollInterval = matchStatus === "FINISHED" ? 0 : 5_000;
 
-  const { data, refetch } = useQuery<{ bets: BetEntry[] }>(GET_BETS, {
+  const { data, refetch } = useQuery<{ bets: Bet[] }>(GET_BETS, {
     variables: { matchId },
     fetchPolicy: "cache-and-network",
     pollInterval,

@@ -8,14 +8,7 @@ import {
 } from "@graphql/mutations";
 import { SECTION, INPUT, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
 import SectionTitle from "@atoms/SectionTitle";
-
-interface FriendEntry {
-  id: number;
-  username: string;
-  displayName: string;
-  status: string;
-  direction: "incoming" | "outgoing";
-}
+import Friend from "@interfaces/Friend.ts";
 
 const FRIENDS_POLL_INTERVAL_MS = 15_000;
 
@@ -23,7 +16,7 @@ export default function FriendsSection() {
   const [query, setQuery] = useState("");
   const [addStatus, setAddStatus] = useState<Record<string, string>>({});
 
-  const { data, refetch } = useQuery<{ friends: FriendEntry[] }>(GET_FRIENDS, {
+  const { data, refetch } = useQuery<{ friends: Friend[] }>(GET_FRIENDS, {
     fetchPolicy: "cache-and-network",
     pollInterval: FRIENDS_POLL_INTERVAL_MS,
   });

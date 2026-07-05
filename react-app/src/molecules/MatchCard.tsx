@@ -1,17 +1,7 @@
 import { Link } from "react-router-dom";
 import StatusPill from "@atoms/StatusPill";
 import { CARD } from "@utils/ui";
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-  minute: number;
-  date?: string;
-}
+import Match from "@interfaces/Match.ts";
 
 function formatScheduled(dateStr: string): string {
   try {
