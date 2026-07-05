@@ -8,7 +8,7 @@ node_modules/
 react-app/node_modules/
 
 # Build React
-public/
+/public/
 react-app/dist/
 
 # Logs
