@@ -70,10 +70,10 @@ export default function ChatBot() {
   }
 
   return (
-    <>
+    <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-shell sm:pointer-events-none sm:absolute sm:inset-0 sm:z-40 sm:mx-0 sm:max-w-none">
       {open && (
         <div
-          className="fixed bottom-36 right-4 z-50 flex max-h-[70vh] w-80 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-app"
+          className="pointer-events-auto absolute bottom-36 right-4 flex max-h-[70vh] w-80 max-w-[calc(100%-2rem)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-app"
           role="dialog"
           aria-modal="true"
           aria-labelledby="chat-title"
@@ -159,7 +159,7 @@ export default function ChatBot() {
       <button
         ref={fabRef}
         className={
-          "fixed bottom-20 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl text-white shadow-app transition-transform hover:scale-105 " +
+          "pointer-events-auto absolute bottom-20 right-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-2xl text-white shadow-app transition-transform hover:scale-105 " +
           (open ? "scale-95" : "")
         }
         onClick={() => setOpen((prev) => !prev)}
@@ -169,6 +169,6 @@ export default function ChatBot() {
       >
         {open ? "✕" : "💬"}
       </button>
-    </>
+    </div>
   );
 }

@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(() => {
     try {
-      return sessionStorage.getItem(TOKEN_KEY);
+      return localStorage.getItem(TOKEN_KEY);
     } catch {
       return null;
     }
@@ -45,19 +45,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data?.me) setUser(data.me);
       })
       .catch(() => {
-        sessionStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(TOKEN_KEY);
         setToken(null);
       });
   }, [token]);
 
   function login(newToken: string, newUser: AuthUser) {
-    sessionStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
     setUser(newUser);
   }
 
   function logout() {
-    sessionStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
     apolloClient.clearStore();
