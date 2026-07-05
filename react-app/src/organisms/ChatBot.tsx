@@ -95,7 +95,7 @@ export default function ChatBot() {
           </div>
 
           <div
-            className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
+            className="no-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-3"
             role="log"
             aria-live="polite"
             aria-atomic="false"

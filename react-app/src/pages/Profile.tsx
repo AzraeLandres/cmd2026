@@ -72,7 +72,7 @@ export default function Profile() {
           />
         </div>
 
-        <div className="max-h-80 overflow-y-auto pr-1">
+        <div className="no-scrollbar max-h-80 overflow-y-auto pr-1">
           {favorites.length > 0 && (
             <ul className="m-0 mb-3 list-none p-0">
               {favorites.map((team) => (

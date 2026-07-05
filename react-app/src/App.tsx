@@ -78,7 +78,7 @@ export default function App() {
             liveMinute={header.liveMinute}
           />
           <main
-            className="flex-1 w-full px-4 py-4 pb-20 sm:overflow-y-auto"
+            className="no-scrollbar flex-1 w-full px-4 py-4 pb-20 sm:overflow-y-auto"
             id="main-content"
             tabIndex={-1}
           >
