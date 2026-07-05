@@ -2,9 +2,11 @@ import https from 'https';
 import { config } from './config';
 import { ChatMessage } from '../types';
 
-const GROQ_MODEL    = 'llama-3.3-70b-versatile';
+// Modèle "compound" : recherche web intégrée (via l'outil de recherche de Groq),
+// utile pour répondre avec de vraies infos à jour plutôt que le seul entraînement du modèle.
+const GROQ_MODEL    = 'groq/compound-mini';
 const GROQ_MAX_TOKENS = 512;
-const GROQ_TIMEOUT_MS = 25_000;
+const GROQ_TIMEOUT_MS = 30_000;
 
 export function callGroqAPI(systemPrompt: string, messages: ChatMessage[]): Promise<string> {
   const payload = JSON.stringify({
