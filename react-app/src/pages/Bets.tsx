@@ -49,6 +49,22 @@ export default function Bets() {
     return a.matchId.localeCompare(b.matchId);
   });
 
+  const betGroups = betsByMatch.reduce<
+    { matchId: string; match?: Match; bets: Bet[] }[]
+  >((groups, bet) => {
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup && lastGroup.matchId === bet.matchId) {
+      lastGroup.bets.push(bet);
+    } else {
+      groups.push({
+        matchId: bet.matchId,
+        match: matchMap.get(bet.matchId),
+        bets: [bet],
+      });
+    }
+    return groups;
+  }, []);
+
   const leaderboard = allBets.reduce<
     Map<string, { displayName: string; points: number }>
   >((acc, bet) => {
@@ -99,33 +115,35 @@ export default function Bets() {
       {allBets.length === 0 ? (
         <EmptyState>Aucun pari pour l'instant.</EmptyState>
       ) : (
-        <ul className="m-0 list-none p-0">
-          {betsByMatch.map((bet, i) => {
-            const match = matchMap.get(bet.matchId);
-            return (
-              <li
-                key={i}
-                className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+        <div className="space-y-4">
+          {betGroups.map((group) => (
+            <div key={group.matchId}>
+              <Link
+                to={`/match/${group.matchId}`}
+                className="mb-1 block text-sm font-semibold text-text hover:text-primary"
               >
-                <div>
-                  <span className="text-sm font-semibold text-text">
-                    {bet.displayName || bet.username}
-                  </span>
-                  {match && (
-                    <div className="text-xs text-textMuted">
-                      <Link to={`/match/${bet.matchId}`}>
-                        {match.homeTeam} vs {match.awayTeam}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-                <span className="text-sm font-bold text-primary">
-                  {bet.homeScore} – {bet.awayScore}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                {group.match
+                  ? `${group.match.homeTeam} vs ${group.match.awayTeam}`
+                  : `Match ${group.matchId}`}
+              </Link>
+              <ul className="m-0 list-none p-0">
+                {group.bets.map((bet, i) => (
+                  <li
+                    key={i}
+                    className="flex items-center justify-between gap-2 border-b border-border py-2 last:border-0"
+                  >
+                    <span className="text-sm text-text">
+                      {bet.displayName || bet.username}
+                    </span>
+                    <span className="text-sm font-bold text-primary">
+                      {bet.homeScore} – {bet.awayScore}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       )}
     </>
   );
