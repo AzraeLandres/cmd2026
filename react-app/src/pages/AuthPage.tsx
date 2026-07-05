@@ -57,7 +57,7 @@ export default function AuthPage({ initialMode, onBack }: Props) {
   const isRegister = mode === "register";
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-appBg">
+    <div className="flex items-center justify-center min-h-screen bg-appBg ">
       <div className="w-full max-w-sm bg-surface rounded-md shadow-app py-8 px-6 flex flex-col gap-5">
         <button
           type="button"

@@ -87,8 +87,8 @@ export const betsResolvers = {
 
       const match = await getMatchById(args.matchId);
       if (!match) throw new GraphQLError('Match introuvable');
-      if (match.status === 'FINISHED') {
-        throw new GraphQLError('Ce match est terminé, impossible de parier');
+      if (match.status !== 'SCHEDULED') {
+        throw new GraphQLError('Ce match a déjà commencé, impossible de parier');
       }
 
       await pool.query(

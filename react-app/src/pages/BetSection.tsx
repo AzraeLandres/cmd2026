@@ -7,6 +7,7 @@ import { SECTION, FORM_ERROR, FORM_SUCCESS } from "@utils/ui";
 import SectionTitle from "@atoms/SectionTitle";
 import Bet from "@interfaces/Bet.ts";
 import Match from "@interfaces/Match.ts";
+import { scoreBetOutcome, BetOutcome } from "@utils/betScoring";
 
 interface Props {
   matchId: string;
@@ -14,18 +15,11 @@ interface Props {
   match: Match | null;
 }
 
-type BetResult = "exact" | "winner" | "wrong" | null;
+type BetResult = BetOutcome | null;
 
 function evaluateBet(bet: Bet, match: Match): BetResult {
   if (match.status !== "FINISHED") return null;
-  const exactScore =
-    bet.homeScore === match.homeScore && bet.awayScore === match.awayScore;
-  const rightWinner =
-    Math.sign(bet.homeScore - bet.awayScore) ===
-    Math.sign(match.homeScore - match.awayScore);
-  if (exactScore) return "exact";
-  if (rightWinner) return "winner";
-  return "wrong";
+  return scoreBetOutcome(bet.homeScore, bet.awayScore, match.homeScore, match.awayScore);
 }
 
 export default function BetSection({ matchId, matchStatus, match }: Props) {
@@ -35,7 +29,8 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
   const [saved, setSaved] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const pollInterval = matchStatus === "FINISHED" ? 0 : 5_000;
+  const bettingOpen = matchStatus === "SCHEDULED";
+  const pollInterval = bettingOpen ? 5_000 : 0;
 
   const { data, refetch } = useQuery<{ bets: Bet[] }>(GET_BETS, {
     variables: { matchId },
@@ -85,7 +80,7 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
     <section className={SECTION} aria-label="Paris des amis">
       <SectionTitle>Paris des amis</SectionTitle>
 
-      {matchStatus !== "FINISHED" && user && (
+      {bettingOpen && user && (
         <form
           className="mb-3 flex flex-wrap items-center gap-2"
           onSubmit={handleSubmit}
@@ -133,8 +128,16 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
         </form>
       )}
 
-      {!user && matchStatus !== "FINISHED" && (
+      {!user && bettingOpen && (
         <p className="text-sm text-textMuted">Connectez-vous pour parier.</p>
+      )}
+
+      {!bettingOpen && (
+        <p className="text-sm text-textMuted">
+          {matchStatus === "LIVE" || matchStatus === "SUSPENDED"
+            ? "Les paris sont clos, le match a commencé."
+            : "Les paris sont clos pour ce match."}
+        </p>
       )}
 
       {formError && (
@@ -167,12 +170,17 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
                 <span
                   className={
                     "text-sm font-bold " +
-                    (result === "exact" ? "text-secondary" : "text-primary")
+                    (result === "exact"
+                      ? "text-secondary"
+                      : result === "close"
+                        ? "text-accent"
+                        : "text-primary")
                   }
                   aria-label={`Parie ${bet.homeScore} – ${bet.awayScore}`}
                 >
                   {bet.homeScore} – {bet.awayScore}
                   {result === "exact" && " ✅"}
+                  {result === "close" && " 🟠"}
                   {result === "winner" && " 🟡"}
                   {result === "wrong" && " ❌"}
                 </span>
