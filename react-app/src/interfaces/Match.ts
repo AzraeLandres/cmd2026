@@ -1,3 +1,6 @@
+import MatchEvent from "./MatchEvent";
+import Lineups from "./Lineups";
+
 export default interface Match {
   id: string;
   homeTeam: string;
@@ -8,4 +11,8 @@ export default interface Match {
   minute: number;
   date: string;
   stage: string;
+  phase?: string;
+  venue?: string;
+  events?: MatchEvent[];
+  lineups?: Lineups;
 }
