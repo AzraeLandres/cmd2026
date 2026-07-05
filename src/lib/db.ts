@@ -37,6 +37,16 @@ const SCHEMA_SQL = `
   );
 
   CREATE INDEX IF NOT EXISTS idx_friends_addressee ON friends (addressee_id, status);
+
+  CREATE TABLE IF NOT EXISTS favorites (
+    id         SERIAL  PRIMARY KEY,
+    user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    team       VARCHAR(100) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (user_id, team)
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_favorites_user ON favorites (user_id);
 `;
 
 export async function initDb(): Promise<void> {

@@ -1,4 +1,5 @@
 import { db } from '../lib/db';
+import { isValidId } from '../lib/http';
 import { GraphQLContext, Friend } from '../types';
 import { GraphQLError } from 'graphql';
 
@@ -78,6 +79,7 @@ export const friendsResolvers = {
     },
 
     async acceptFriendRequest(_: unknown, args: { friendId: number }, ctx: GraphQLContext): Promise<Friend> {
+      if (!isValidId(args.friendId)) throw new GraphQLError('Identifiant invalide');
       const user = requireAuth(ctx);
       const pool = requireDb();
 
@@ -104,6 +106,7 @@ export const friendsResolvers = {
     },
 
     async removeFriend(_: unknown, args: { friendId: number }, ctx: GraphQLContext): Promise<boolean> {
+      if (!isValidId(args.friendId)) throw new GraphQLError('Identifiant invalide');
       const user = requireAuth(ctx);
       const pool = requireDb();
 

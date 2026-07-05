@@ -65,6 +65,7 @@ export const typeDefs = `
     bets(matchId: String!): [Bet!]!
     allBets: [Bet!]!
     friends: [Friend!]!
+    favorites: [String!]!
   }
 
   type Mutation {
@@ -79,6 +80,8 @@ export const typeDefs = `
     sendFriendRequest(username: String!): Friend!
     acceptFriendRequest(friendId: Int!): Friend!
     removeFriend(friendId: Int!): Boolean!
+    addFavorite(team: String!): [String!]!
+    removeFavorite(team: String!): [String!]!
     sendChatMessage(message: String!): String!
   }
 `;

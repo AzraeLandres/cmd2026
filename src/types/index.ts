@@ -71,4 +71,5 @@ export interface ChatMessage {
 
 export interface GraphQLContext {
   user: User | null;
+  ip:   string;
 }

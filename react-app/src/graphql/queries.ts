@@ -51,3 +51,7 @@ export const GET_FRIENDS = gql`
     friends { id username displayName status direction }
   }
 `;
+
+export const GET_FAVORITES = gql`
+  query GetFavorites { favorites }
+`;

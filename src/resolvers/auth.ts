@@ -1,11 +1,23 @@
 import { hashPassword, verifyPassword, createToken } from '../lib/auth';
 import { db } from '../lib/db';
+import { isRateLimited } from '../lib/rateLimit';
 import { GraphQLContext, AuthPayload } from '../types';
 import { GraphQLError } from 'graphql';
+
+const LOGIN_LIMIT           = 10;
+const LOGIN_WINDOW_MS       = 5 * 60 * 1000;
+const REGISTER_LIMIT        = 5;
+const REGISTER_WINDOW_MS    = 60 * 60 * 1000;
 
 function requireAuth(ctx: GraphQLContext) {
   if (!ctx.user) throw new GraphQLError('Connexion requise', { extensions: { code: 'UNAUTHENTICATED' } });
   return ctx.user;
+}
+
+function requireNotRateLimited(ip: string, action: string, limit: number, windowMs: number): void {
+  if (isRateLimited(`${action}:${ip}`, limit, windowMs)) {
+    throw new GraphQLError('Trop de tentatives, réessayez plus tard', { extensions: { code: 'RATE_LIMITED' } });
+  }
 }
 
 interface RegisterArgs {
@@ -27,7 +39,8 @@ export const authResolvers = {
   },
 
   Mutation: {
-    async register(_: unknown, args: RegisterArgs): Promise<AuthPayload> {
+    async register(_: unknown, args: RegisterArgs, ctx: GraphQLContext): Promise<AuthPayload> {
+      requireNotRateLimited(ctx.ip, 'register', REGISTER_LIMIT, REGISTER_WINDOW_MS);
       if (!db) throw new GraphQLError('Base de données non configurée', { extensions: { code: 'UNAVAILABLE' } });
 
       const trimmedUsername = args.username.trim().toLowerCase();
@@ -52,7 +65,8 @@ export const authResolvers = {
       return { token, user };
     },
 
-    async login(_: unknown, args: LoginArgs): Promise<AuthPayload> {
+    async login(_: unknown, args: LoginArgs, ctx: GraphQLContext): Promise<AuthPayload> {
+      requireNotRateLimited(ctx.ip, 'login', LOGIN_LIMIT, LOGIN_WINDOW_MS);
       if (!db) throw new GraphQLError('Base de données non configurée', { extensions: { code: 'UNAVAILABLE' } });
 
       const trimmedUsername = args.username.trim().toLowerCase();

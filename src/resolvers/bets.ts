@@ -1,5 +1,6 @@
 import { db } from '../lib/db';
 import { getMatchById } from '../lib/football';
+import { isValidId } from '../lib/http';
 import { GraphQLContext, Bet } from '../types';
 import { GraphQLError } from 'graphql';
 
@@ -45,6 +46,7 @@ async function getVisibleUserIds(userId: number): Promise<number[]> {
 export const betsResolvers = {
   Query: {
     async bets(_: unknown, args: { matchId: string }, ctx: GraphQLContext): Promise<Bet[]> {
+      if (!isValidId(args.matchId)) throw new GraphQLError('Identifiant de match invalide');
       const user = requireAuth(ctx);
       const pool = requireDb();
       const visibleUserIds = await getVisibleUserIds(user.id);
@@ -77,6 +79,7 @@ export const betsResolvers = {
 
   Mutation: {
     async placeBet(_: unknown, args: PlaceBetArgs, ctx: GraphQLContext): Promise<Bet> {
+      if (!isValidId(args.matchId)) throw new GraphQLError('Identifiant de match invalide');
       const user = requireAuth(ctx);
       const pool = requireDb();
 

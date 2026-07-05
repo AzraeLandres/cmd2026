@@ -1,5 +1,8 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
 import { useAuth } from './AuthContext';
+import { GET_FAVORITES } from '@graphql/queries';
+import { ADD_FAVORITE, REMOVE_FAVORITE } from '@graphql/mutations';
 
 interface ProfileContextValue {
   favorites:     string[];
@@ -9,13 +12,13 @@ interface ProfileContextValue {
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
-function storageKey(username: string | undefined): string {
-  return `cdm_favorites_${username ?? 'guest'}`;
+function legacyStorageKey(username: string): string {
+  return `cdm_favorites_${username}`;
 }
 
-function loadFavorites(username: string | undefined): string[] {
+function readLegacyFavorites(username: string): string[] {
   try {
-    const stored = localStorage.getItem(storageKey(username));
+    const stored = localStorage.getItem(legacyStorageKey(username));
     return stored ? (JSON.parse(stored) as string[]) : [];
   } catch {
     return [];
@@ -24,28 +27,55 @@ function loadFavorites(username: string | undefined): string[] {
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [favorites, setFavorites] = useState<string[]>(() =>
-    loadFavorites(user?.username),
-  );
+  const migratedUsers = useRef(new Set<string>());
 
+  const { data, refetch } = useQuery<{ favorites: string[] }>(GET_FAVORITES, {
+    skip: !user,
+    fetchPolicy: 'cache-and-network',
+  });
+  const [addFavoriteMutation] = useMutation<{ addFavorite: string[] }>(ADD_FAVORITE);
+  const [removeFavoriteMutation] = useMutation<{ removeFavorite: string[] }>(REMOVE_FAVORITE);
+
+  const favorites = data?.favorites ?? [];
+
+  // Migration ponctuelle : les favoris étaient auparavant stockés en localStorage.
+  // On les pousse en base une fois puis on nettoie le stockage local.
   useEffect(() => {
-    setFavorites(loadFavorites(user?.username));
-  }, [user?.username]);
+    if (!user || migratedUsers.current.has(user.username)) return;
+    migratedUsers.current.add(user.username);
+
+    const legacy = readLegacyFavorites(user.username);
+    if (legacy.length === 0) return;
+
+    (async () => {
+      for (const team of legacy) {
+        await addFavoriteMutation({ variables: { team } });
+      }
+      localStorage.removeItem(legacyStorageKey(user.username));
+      refetch();
+    })();
+  }, [user, addFavoriteMutation, refetch]);
 
   function addFavorite(team: string) {
-    setFavorites((prev) => {
-      if (prev.includes(team)) return prev;
-      const updated = [...prev, team];
-      localStorage.setItem(storageKey(user?.username), JSON.stringify(updated));
-      return updated;
+    if (favorites.includes(team)) return;
+    addFavoriteMutation({
+      variables: { team },
+      optimisticResponse: { addFavorite: [...favorites, team] },
+      update(cache, { data }) {
+        if (!data) return;
+        cache.writeQuery({ query: GET_FAVORITES, data: { favorites: data.addFavorite } });
+      },
     });
   }
 
   function removeFavorite(team: string) {
-    setFavorites((prev) => {
-      const updated = prev.filter((t) => t !== team);
-      localStorage.setItem(storageKey(user?.username), JSON.stringify(updated));
-      return updated;
+    removeFavoriteMutation({
+      variables: { team },
+      optimisticResponse: { removeFavorite: favorites.filter((t) => t !== team) },
+      update(cache, { data }) {
+        if (!data) return;
+        cache.writeQuery({ query: GET_FAVORITES, data: { favorites: data.removeFavorite } });
+      },
     });
   }
 
