@@ -11,16 +11,11 @@ sudo usermod -aG docker $USER   # se reconnecter après
 ## 1. Envoyer le projet sur le VPS
 
 **Option A — Git (recommandé)**
+
 ```bash
 # Sur le VPS
 git clone <url-de-ton-dépôt> /opt/cdm2026
 cd /opt/cdm2026/prototype
-```
-
-**Option B — rsync depuis ton PC**
-```bash
-rsync -avz --exclude node_modules --exclude .env \
-  ./prototype/ user@vps-ip:/opt/cdm2026/
 ```
 
 ## 2. Configurer les variables d'environnement
@@ -32,6 +27,7 @@ nano .env   # remplir PG_PASSWORD, TOKEN_SECRET, et les clés API
 ```
 
 Générer un TOKEN_SECRET sécurisé :
+
 ```bash
 openssl rand -hex 32
 ```
@@ -43,6 +39,7 @@ docker compose up -d --build
 ```
 
 Vérifier que tout tourne :
+
 ```bash
 docker compose ps
 docker compose logs app --tail=30
@@ -50,24 +47,9 @@ docker compose logs app --tail=30
 
 L'application est accessible sur **http://ip-du-vps**
 
-## 4. Activer HTTPS avec Let's Encrypt (optionnel mais recommandé)
+## 4. HTTPS
 
-```bash
-# Remplacer votre-domaine.com par ton vrai domaine dans nginx/default.conf
-# Pointer le domaine vers l'IP du VPS (DNS A record)
-
-# Obtenir le certificat
-docker compose run --rm \
-  -v $(pwd)/nginx/certbot-www:/var/www/certbot \
-  certbot/certbot certonly --webroot \
-  --webroot-path /var/www/certbot \
-  -d votre-domaine.com \
-  --email votre@email.com --agree-tos --no-eff-email
-
-# Décommenter le bloc HTTPS dans nginx/default.conf
-# Puis redémarrer nginx
-docker compose restart nginx
-```
+Géré par Caddy en amont sur le VPS (certificats Let's Encrypt automatiques) — rien à configurer côté application. Caddy doit proxifier vers `http://localhost:3001`.
 
 ## 5. Mettre à jour l'application
 

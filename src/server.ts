@@ -38,7 +38,7 @@ async function startServer(): Promise<void> {
   await apollo.start();
 
   const app = express();
-  app.set('trust proxy', 1); // derrière nginx — nécessaire pour un req.ip correct (rate-limiting par IP)
+  app.set('trust proxy', 1); // derrière Caddy — nécessaire pour un req.ip correct (rate-limiting par IP)
   app.use(express.json());
 
   app.use(
