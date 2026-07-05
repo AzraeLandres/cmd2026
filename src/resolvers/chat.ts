@@ -6,14 +6,15 @@ import { GraphQLError } from 'graphql';
 
 const SYSTEM_PROMPT = `Tu es un assistant expert en football pour la Coupe du Monde 2026.
 Tu réponds en français de façon concise et précise.
-Tu as accès à la liste des matchs suivis par l'application (à venir, en direct ou terminés) fournie ci-dessous : utilise-la en priorité pour toute question sur ces matchs précis, c'est la source la plus fiable pour ce qui concerne l'application.
+Tu as accès à la liste des matchs suivis par l'application (à venir, en direct ou terminés) fournie ci-dessous, avec la date et l'heure actuelles : utilise-la en priorité pour toute question sur ces matchs précis, c'est la source la plus fiable pour ce qui concerne l'application.
+Les sections "Matchs récents" et "Prochains matchs" sont déjà triées chronologiquement (la plus récente/proche en premier) — fie-toi à cet ordre plutôt que de recalculer les dates toi-même.
 Pour toute autre question d'actualité (autres résultats, informations générales sur la compétition, équipes, joueurs…), utilise la recherche web pour donner une réponse à jour plutôt que de te fier uniquement à tes connaissances.
 Ne fournis jamais d'informations inventées — si tu ne trouves rien de fiable, dis-le clairement.`;
 
 const CHAT_LIMIT        = 20;
 const CHAT_WINDOW_MS    = 10 * 60 * 1000;
 const MAX_MESSAGE_LENGTH = 500;
-const MAX_CONTEXT_MATCHES = 20;
+const MAX_MATCHES_PER_SECTION = 10;
 
 function formatMatch(m: Match): string {
   const scoreOrStatus =
@@ -24,27 +25,41 @@ function formatMatch(m: Match): string {
   return `${m.homeTeam} vs ${m.awayTeam} : ${scoreOrStatus}`;
 }
 
-// Borne la taille du contexte envoyé au LLM même pour un vrai calendrier (~104 matchs) :
-// priorité aux matchs cités dans le message, puis aux matchs en direct, puis aux plus proches dans le temps.
-function selectRelevantMatches(matches: Match[], message: string): Match[] {
-  if (matches.length <= MAX_CONTEXT_MATCHES) return matches;
+function hasAssignedTeams(m: Match): boolean {
+  return Boolean(m.homeTeam.trim()) && Boolean(m.awayTeam.trim());
+}
 
+function formatSection(title: string, matches: Match[]): string {
+  if (matches.length === 0) return '';
+  return `\n\n${title} :\n` + matches.map(formatMatch).join('\n');
+}
+
+// Construit un contexte explicitement trié et daté (plutôt qu'une simple liste plate) :
+// le modèle n'a pas à recalculer lui-même quel match est "le plus récent" ou "le prochain".
+function buildMatchContext(matches: Match[], message: string): string {
   const lowerMessage = message.toLowerCase();
   const mentioned = matches.filter(
     (m) => lowerMessage.includes(m.homeTeam.toLowerCase()) || lowerMessage.includes(m.awayTeam.toLowerCase()),
   );
   const live = matches.filter((m) => m.status === 'LIVE');
-  const now = Date.now();
-  const byProximity = [...matches].sort(
-    (a, b) => Math.abs(new Date(a.date).getTime() - now) - Math.abs(new Date(b.date).getTime() - now),
-  );
 
-  const selected = new Map<string, Match>();
-  for (const m of [...mentioned, ...live, ...byProximity]) {
-    if (selected.size >= MAX_CONTEXT_MATCHES) break;
-    selected.set(m.id, m);
-  }
-  return Array.from(selected.values());
+  const recentFinished = matches
+    .filter((m) => m.status === 'FINISHED')
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, MAX_MATCHES_PER_SECTION);
+
+  const upcoming = matches
+    .filter((m) => m.status === 'SCHEDULED' && hasAssignedTeams(m))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, MAX_MATCHES_PER_SECTION);
+
+  return (
+    `\n\nDate et heure actuelles : ${new Date().toISOString()}`
+    + formatSection('Matchs mentionnés dans la question', mentioned)
+    + formatSection('Matchs en direct', live)
+    + formatSection('Matchs récents (du plus récent au plus ancien)', recentFinished)
+    + formatSection('Prochains matchs (du plus proche au plus lointain)', upcoming)
+  );
 }
 
 export const chatResolvers = {
@@ -64,11 +79,7 @@ export const chatResolvers = {
       let matchContext = '';
       try {
         const matches = await getMatches();
-        const relevant = selectRelevantMatches(matches, message);
-        if (relevant.length > 0) {
-          matchContext = '\n\nMatchs de la compétition (statut, score, minute si en direct) :\n'
-            + relevant.map(formatMatch).join('\n');
-        }
+        matchContext = buildMatchContext(matches, message);
       } catch {
         // données de match non critiques pour la réponse du chatbot
       }
