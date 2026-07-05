@@ -9,26 +9,10 @@ import {
   DATA_TABLE_TD,
   DATA_TABLE_NUM,
 } from "@utils/ui";
+import Bet from "@interfaces/Bet.ts";
+import Match from "@interfaces/Match.ts";
 
-interface BetEntry {
-  matchId: string;
-  homeScore: number;
-  awayScore: number;
-  userId: number;
-  username: string;
-  displayName: string;
-}
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  homeScore: number;
-  awayScore: number;
-  status: string;
-}
-
-function computePoints(bet: BetEntry, match: Match): number | null {
+function computePoints(bet: Bet, match: Match): number | null {
   if (match.status !== "FINISHED") return null;
   const exactScore =
     bet.homeScore === match.homeScore && bet.awayScore === match.awayScore;
@@ -45,7 +29,7 @@ export default function Bets() {
     matches: Match[];
   }>(GET_MATCHES, { fetchPolicy: "cache-and-network" });
   const { data: betsData, loading: betsLoading } = useQuery<{
-    allBets: BetEntry[];
+    allBets: Bet[];
   }>(GET_ALL_BETS, { fetchPolicy: "cache-and-network" });
 
   const loading = matchLoading || betsLoading;
@@ -55,6 +39,15 @@ export default function Bets() {
   const allBets = betsData?.allBets ?? [];
 
   const matchMap = new Map(matches.map((m) => [m.id, m]));
+
+  const betsByMatch = [...allBets].sort((a, b) => {
+    const dateA = matchMap.get(a.matchId)?.date;
+    const dateB = matchMap.get(b.matchId)?.date;
+    const timeA = dateA ? new Date(dateA).getTime() : 0;
+    const timeB = dateB ? new Date(dateB).getTime() : 0;
+    if (timeA !== timeB) return timeA - timeB;
+    return a.matchId.localeCompare(b.matchId);
+  });
 
   const leaderboard = allBets.reduce<
     Map<string, { displayName: string; points: number }>
@@ -107,7 +100,7 @@ export default function Bets() {
         <EmptyState>Aucun pari pour l'instant.</EmptyState>
       ) : (
         <ul className="m-0 list-none p-0">
-          {allBets.map((bet, i) => {
+          {betsByMatch.map((bet, i) => {
             const match = matchMap.get(bet.matchId);
             return (
               <li

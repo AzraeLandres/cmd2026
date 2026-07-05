@@ -9,7 +9,11 @@ import EmptyState from "@atoms/EmptyState";
 import SectionTitle from "@atoms/SectionTitle";
 import Match from "@interfaces/Match.ts";
 import Bet from "@interfaces/Bet.ts";
-import { pickFeaturedMatch, pickTeamMatch } from "@/utils/matchHelpers";
+import {
+  pickFeaturedMatch,
+  pickTeamMatch,
+  hasAssignedTeams,
+} from "@/utils/matchHelpers";
 import { CARD } from "@utils/ui";
 
 export default function Home() {
@@ -47,7 +51,12 @@ export default function Home() {
       .slice(0, 5);
 
     const upcomingUnbetted = matches
-      .filter((m) => m.status === "SCHEDULED" && !myBetIds.has(m.id))
+      .filter(
+        (m) =>
+          m.status === "SCHEDULED" &&
+          !myBetIds.has(m.id) &&
+          hasAssignedTeams(m),
+      )
       .slice(0, 3);
 
     return {
