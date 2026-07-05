@@ -1,6 +1,8 @@
 import { getMatches, getMatchById, VALID_PHASES } from '../lib/football';
 import { config } from '../lib/config';
+import { isValidId } from '../lib/http';
 import { GraphQLContext } from '../types';
+import { GraphQLError } from 'graphql';
 
 export const footballResolvers = {
   Query: {
@@ -11,6 +13,7 @@ export const footballResolvers = {
     },
 
     async match(_: unknown, args: { id: string }, _ctx: GraphQLContext) {
+      if (!isValidId(args.id)) throw new GraphQLError('Identifiant de match invalide');
       return getMatchById(args.id);
     },
 

@@ -25,3 +25,24 @@ CREATE TABLE IF NOT EXISTS bets (
 
 -- Index pour accélérer la récupération des paris par match
 CREATE INDEX IF NOT EXISTS idx_bets_match_id ON bets (match_id);
+
+CREATE TABLE IF NOT EXISTS friends (
+  id           SERIAL  PRIMARY KEY,
+  requester_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  addressee_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  status       VARCHAR(10) DEFAULT 'pending' CHECK (status IN ('pending', 'accepted')),
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (requester_id, addressee_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_friends_addressee ON friends (addressee_id, status);
+
+CREATE TABLE IF NOT EXISTS favorites (
+  id         SERIAL  PRIMARY KEY,
+  user_id    INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  team       VARCHAR(100) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, team)
+);
+
+CREATE INDEX IF NOT EXISTS idx_favorites_user ON favorites (user_id);

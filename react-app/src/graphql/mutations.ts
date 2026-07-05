@@ -54,6 +54,18 @@ export const REMOVE_FRIEND = gql`
   }
 `;
 
+export const ADD_FAVORITE = gql`
+  mutation AddFavorite($team: String!) {
+    addFavorite(team: $team)
+  }
+`;
+
+export const REMOVE_FAVORITE = gql`
+  mutation RemoveFavorite($team: String!) {
+    removeFavorite(team: $team)
+  }
+`;
+
 export const SEND_CHAT_MESSAGE = gql`
   mutation SendChatMessage($message: String!) {
     sendChatMessage(message: $message)

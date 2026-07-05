@@ -38,6 +38,7 @@ async function startServer(): Promise<void> {
   await apollo.start();
 
   const app = express();
+  app.set('trust proxy', 1); // derrière nginx — nécessaire pour un req.ip correct (rate-limiting par IP)
   app.use(express.json());
 
   app.use(
@@ -45,7 +46,8 @@ async function startServer(): Promise<void> {
     expressMiddleware(apollo, {
       context: async ({ req }): Promise<GraphQLContext> => {
         const user = await resolveUserFromToken(req.headers.authorization);
-        return { user };
+        const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown';
+        return { user, ip };
       },
     })
   );
