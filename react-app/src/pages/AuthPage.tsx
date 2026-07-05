@@ -5,9 +5,14 @@ import { LOGIN, REGISTER } from "@graphql/mutations";
 
 type Mode = "register" | "login";
 
-export default function AuthPage() {
+interface Props {
+  initialMode: Mode;
+  onBack: () => void;
+}
+
+export default function AuthPage({ initialMode, onBack }: Props) {
   const { login } = useAuth();
-  const [mode, setMode] = useState<Mode>("register");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
@@ -54,6 +59,14 @@ export default function AuthPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-appBg">
       <div className="w-full max-w-sm bg-surface rounded-md shadow-app py-8 px-6 flex flex-col gap-5">
+        <button
+          type="button"
+          onClick={onBack}
+          className="self-start text-sm text-textMuted"
+        >
+          ← Retour
+        </button>
+
         <h1 className="text-xl font-bold text-center text-accent">
           {isRegister ? "Inscription" : "Connexion"}
         </h1>

@@ -55,7 +55,7 @@ export default function BottomNav() {
   const { pathname } = useLocation();
   return (
     <nav
-      className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-shell -translate-x-1/2 items-center justify-center border-t border-border bg-surface"
+      className="fixed inset-x-0 bottom-0 left-1/2 z-40 flex w-full max-w-shell shrink-0 -translate-x-1/2 items-center justify-center border-t border-border bg-surface sm:relative sm:inset-auto sm:bottom-auto sm:left-auto sm:z-auto sm:w-full sm:max-w-none sm:translate-x-0"
       aria-label="Navigation principale"
     >
       {NAV_ITEMS.map((item) => (

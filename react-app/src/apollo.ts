@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, HttpLink, ApolloLink } from '@apollo/client';
 
 function getStoredToken(): string | null {
-  try { return sessionStorage.getItem('cdm_token'); } catch { return null; }
+  try { return localStorage.getItem('cdm_token'); } catch { return null; }
 }
 
 const authLink = new ApolloLink((operation, forward) => {
