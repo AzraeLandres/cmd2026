@@ -43,7 +43,7 @@ function fetchJson<T>(hostname: string, urlPath: string, headers: Record<string,
 }
 
 function normalizeStatus(rawStatus: string): MatchStatus {
-  if (rawStatus === 'IN_PLAY' || rawStatus === 'PAUSED')   return 'LIVE';
+  if (rawStatus === 'IN_PLAY' || rawStatus === 'PAUSED' || rawStatus === 'LIVE') return 'LIVE';
   if (rawStatus === 'FINISHED' || rawStatus === 'AWARDED') return 'FINISHED';
   if (rawStatus === 'SCHEDULED' || rawStatus === 'TIMED')  return 'SCHEDULED';
   if (rawStatus === 'POSTPONED') return 'POSTPONED';

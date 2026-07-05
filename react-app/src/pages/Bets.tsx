@@ -11,17 +11,13 @@ import {
 } from "@utils/ui";
 import Bet from "@interfaces/Bet.ts";
 import Match from "@interfaces/Match.ts";
+import { scoreBetOutcome, pointsForOutcome } from "@utils/betScoring";
 
 function computePoints(bet: Bet, match: Match): number | null {
   if (match.status !== "FINISHED") return null;
-  const exactScore =
-    bet.homeScore === match.homeScore && bet.awayScore === match.awayScore;
-  const rightWinner =
-    Math.sign(bet.homeScore - bet.awayScore) ===
-    Math.sign(match.homeScore - match.awayScore);
-  if (exactScore) return 3;
-  if (rightWinner) return 1;
-  return 0;
+  return pointsForOutcome(
+    scoreBetOutcome(bet.homeScore, bet.awayScore, match.homeScore, match.awayScore),
+  );
 }
 
 export default function Bets() {
