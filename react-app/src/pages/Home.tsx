@@ -29,7 +29,7 @@ export default function Home() {
   });
 
   const matches = matchData?.matches ?? [];
-  const myBets = betsData?.allBets ?? [];
+  const myBets = (betsData?.allBets ?? []).filter((b) => b.userId === user?.id);
 
   const { featured, upcomingBets, upcomingUnbetted } = useMemo(() => {
     const matchById = new Map(matches.map((m) => [m.id, m]));
