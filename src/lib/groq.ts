@@ -8,6 +8,15 @@ const GROQ_MODEL    = 'groq/compound-mini';
 const GROQ_MAX_TOKENS = 512;
 const GROQ_TIMEOUT_MS = 30_000;
 
+export class GroqApiError extends Error {
+  code?: string;
+  constructor(message: string, code?: string) {
+    super(message);
+    this.name = 'GroqApiError';
+    this.code = code;
+  }
+}
+
 export function callGroqAPI(systemPrompt: string, messages: ChatMessage[]): Promise<string> {
   const payload = JSON.stringify({
     model:      GROQ_MODEL,
@@ -36,7 +45,9 @@ export function callGroqAPI(systemPrompt: string, messages: ChatMessage[]): Prom
             const json = JSON.parse(body);
             const message = json.choices?.[0]?.message?.content;
             if (message) return resolve(message);
-            if (json.error) return reject(new Error(json.error.message ?? 'Erreur API Groq'));
+            if (json.error) {
+              return reject(new GroqApiError(json.error.message ?? 'Erreur API Groq', json.error.code));
+            }
             reject(new Error('Réponse inattendue de l\'API Groq'));
           } catch (e) {
             reject(e);
