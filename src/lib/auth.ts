@@ -39,7 +39,14 @@ export function verifyToken(token: string | null): number | null {
   const expected = createHmac('sha256', config.tokenSecret)
     .update(payload)
     .digest('hex');
-  if (signature !== expected) return null;
+
+  const signatureBuffer = Buffer.from(signature, 'hex');
+  const expectedBuffer  = Buffer.from(expected, 'hex');
+  const validSignature =
+    signatureBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(signatureBuffer, expectedBuffer);
+  if (!validSignature) return null;
+
   if (Date.now() > parseInt(expiryStr, 10)) return null;
   return parseInt(userIdStr, 10);
 }

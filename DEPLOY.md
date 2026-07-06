@@ -23,7 +23,7 @@ cd /opt/cdm2026/prototype
 ```bash
 cd /opt/cdm2026/prototype
 cp .env.example .env
-nano .env   # remplir PG_PASSWORD, TOKEN_SECRET, et les clés API
+nano .env   # remplir PG_PASSWORD, TOKEN_SECRET, PG_APP_PASSWORD et les clés API
 ```
 
 Générer un TOKEN_SECRET sécurisé :
@@ -46,6 +46,14 @@ docker compose logs app --tail=30
 ```
 
 L'application est accessible sur **http://ip-du-vps**
+
+### Première installation : créer le schéma + le rôle applicatif restreint
+
+```bash
+docker compose exec app npm run db:migrate
+```
+
+À lancer une fois (et à chaque évolution du schéma). Crée les tables ainsi qu'un rôle PostgreSQL restreint (`cdm_app`, `SELECT`/`INSERT`/`UPDATE`/`DELETE` uniquement) que l'app utilise ensuite au quotidien — jamais le rôle propriétaire.
 
 ## 4. HTTPS
 

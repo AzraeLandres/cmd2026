@@ -4,7 +4,6 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { typeDefs }   from './schema';
 import { resolvers }  from './resolvers';
-import { initDb }     from './lib/db';
 import { config }     from './lib/config';
 import { extractUserIdFromHeader } from './lib/auth';
 import { GraphQLContext, User } from './types';
@@ -32,8 +31,6 @@ async function resolveUserFromToken(authHeader: string | undefined): Promise<Use
 }
 
 async function startServer(): Promise<void> {
-  await initDb();
-
   const apollo = new ApolloServer<GraphQLContext>({ typeDefs, resolvers });
   await apollo.start();
 
@@ -60,7 +57,7 @@ async function startServer(): Promise<void> {
 
   app.listen(PORT, () => {
     const mode = config.footballApiKey ? 'live' : 'demo';
-    const db   = config.databaseUrl    ? 'PostgreSQL' : 'désactivée';
+    const db   = config.appDatabaseUrl ? 'PostgreSQL' : 'désactivée';
     console.log(`CDM 2026 démarré sur le port ${PORT} (mode: ${mode}, BDD: ${db})`);
     console.log(`GraphQL disponible sur http://localhost:${PORT}/graphql`);
   });

@@ -66,6 +66,7 @@ Projet réalisé dans le cadre d'une soutenance de Master 1.
 # Back-end
 cp .env.example .env   # renseigner les variables
 npm install
+npm run db:migrate      # crée les tables + le rôle applicatif restreint (une fois, et à chaque évolution du schéma)
 npm run dev             # démarre le serveur GraphQL avec rechargement à chaud (tsx watch)
 
 # Front-end (dans un second terminal)
@@ -84,7 +85,12 @@ L'API GraphQL est disponible sur `http://localhost:3000/graphql`, le front sur `
 | `FOOTBALL_DATA_API_KEY` | Clé API football-data.org v4 (optionnelle — sans elle, mode démo) |
 | `GROQ_API_KEY` | Clé API Groq (chatbot) |
 | `TOKEN_SECRET` | Secret HMAC pour les tokens d'auth — générer avec `openssl rand -hex 32` |
-| `DATABASE_URL` | DSN PostgreSQL complet, **ou** définir `PG_HOST` / `PG_PORT` / `PG_DB` / `PG_USER` / `PG_PASSWORD` séparément (utilisé par Docker Compose) |
+| `DATABASE_URL` | DSN PostgreSQL du rôle **propriétaire**, **ou** `PG_HOST`/`PG_PORT`/`PG_DB`/`PG_USER`/`PG_PASSWORD` séparément — utilisé uniquement par `npm run db:migrate` |
+| `PG_APP_USER` / `PG_APP_PASSWORD` | Rôle applicatif **restreint** (SELECT/INSERT/UPDATE/DELETE uniquement), utilisé par le serveur au quotidien — créé par `db:migrate`. Sans ces variables, l'app retombe sur `DATABASE_URL` (rôle propriétaire) |
+
+### Base de données : séparation des rôles
+
+L'application ne se connecte **jamais** avec le rôle propriétaire de la base (`cdm`) au runtime. `npm run db:migrate` (à lancer manuellement, avec les identifiants propriétaires) crée les tables puis un rôle applicatif dédié (`cdm_app`) limité à `SELECT`/`INSERT`/`UPDATE`/`DELETE` — sans droits `CREATE`/`DROP`/`ALTER`. Le serveur GraphQL utilise ensuite ce rôle restreint (`PG_APP_USER`/`PG_APP_PASSWORD`) pour toutes ses requêtes, ce qui limite les dégâts possibles en cas de faille (ex. injection SQL) à de la lecture/écriture de données, jamais à une modification du schéma.
 
 ### Production (Docker)
 
