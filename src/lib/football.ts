@@ -52,14 +52,23 @@ function normalizeStatus(rawStatus: string): MatchStatus {
   return 'SCHEDULED';
 }
 
+const HALF_DURATION_MIN   = 45;
+const HALFTIME_BREAK_MIN  = 15;
+
 // L'API football-data.org (offre gratuite) ne fournit pas la minute en direct :
-// on l'estime à partir de l'heure de coup d'envoi quand elle est absente.
+// on l'estime à partir de l'heure de coup d'envoi quand elle est absente, en gelant
+// l'horloge à 45' pendant la pause de mi-temps plutôt que de compter le temps réel en continu.
 function resolveMinute(status: MatchStatus, providedMinute: unknown, utcDate: string): number {
   if (typeof providedMinute === 'number' && providedMinute > 0) return providedMinute;
   if (status !== 'LIVE' || !utcDate) return 0;
 
-  const elapsed = Math.floor((Date.now() - new Date(utcDate).getTime()) / 60_000);
-  return Math.min(90, Math.max(0, elapsed));
+  const elapsed = Math.max(0, Math.floor((Date.now() - new Date(utcDate).getTime()) / 60_000));
+
+  if (elapsed <= HALF_DURATION_MIN) return elapsed;
+  if (elapsed <= HALF_DURATION_MIN + HALFTIME_BREAK_MIN) return HALF_DURATION_MIN;
+
+  const secondHalfElapsed = elapsed - HALF_DURATION_MIN - HALFTIME_BREAK_MIN;
+  return Math.min(90, HALF_DURATION_MIN + secondHalfElapsed);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
