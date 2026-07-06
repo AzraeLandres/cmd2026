@@ -42,6 +42,27 @@ function buildDatabaseUrl(): string {
   return "";
 }
 
+// Rôle restreint (SELECT/INSERT/UPDATE/DELETE) utilisé par l'app au quotidien.
+// Retombe sur databaseUrl (rôle propriétaire) tant que le rôle restreint n'a pas été
+// créé via `npm run db:migrate` — évite de casser l'app pendant la transition.
+function buildAppDatabaseUrl(): string {
+  if (process.env.DATABASE_APP_URL) return process.env.DATABASE_APP_URL;
+
+  const host = process.env.PG_HOST;
+  const port = process.env.PG_PORT ?? "5432";
+  const db = process.env.PG_DB;
+  const user = process.env.PG_APP_USER;
+  const password = process.env.PG_APP_PASSWORD;
+
+  if (host && db && user && password) {
+    return `postgresql://${user}:${encodeURIComponent(password)}@${host}:${port}/${db}`;
+  }
+
+  return "";
+}
+
+const databaseUrl = buildDatabaseUrl();
+
 export const config = {
   port: parseInt(process.env.PORT ?? "3000", 10),
   footballApiKey: process.env.FOOTBALL_DATA_API_KEY ?? "",
@@ -49,5 +70,6 @@ export const config = {
   tokenSecret: process.env.TOKEN_SECRET ?? "cdm2026_dev_secret_changeme",
   publicDir: path.join(rootDir, "public"),
   mockFile: path.join(rootDir, "data/mock-matches.json"),
-  databaseUrl: buildDatabaseUrl(),
+  databaseUrl,
+  appDatabaseUrl: buildAppDatabaseUrl() || databaseUrl,
 };
