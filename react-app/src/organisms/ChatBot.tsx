@@ -49,15 +49,12 @@ export default function ChatBot() {
       const { data } = await sendMessage({ variables: { message: text } });
       const reply = data?.sendChatMessage ?? "Désolé, aucune réponse reçue.";
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "Désolé, une erreur est survenue. Vérifiez que GROQ_API_KEY est configuré.",
-        },
-      ]);
+    } catch (err: unknown) {
+      const content =
+        err instanceof Error && err.message
+          ? err.message.replace("ApolloError: ", "")
+          : "Désolé, une erreur est survenue.";
+      setMessages((prev) => [...prev, { role: "assistant", content }]);
     }
   }
 

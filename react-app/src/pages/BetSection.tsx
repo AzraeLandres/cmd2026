@@ -19,7 +19,12 @@ type BetResult = BetOutcome | null;
 
 function evaluateBet(bet: Bet, match: Match): BetResult {
   if (match.status !== "FINISHED") return null;
-  return scoreBetOutcome(bet.homeScore, bet.awayScore, match.homeScore, match.awayScore);
+  return scoreBetOutcome(
+    bet.homeScore,
+    bet.awayScore,
+    match.homeScore,
+    match.awayScore,
+  );
 }
 
 export default function BetSection({ matchId, matchStatus, match }: Props) {
@@ -153,7 +158,7 @@ export default function BetSection({ matchId, matchStatus, match }: Props) {
 
       {bets.length === 0 ? (
         <div className="pb-2 text-sm text-textMuted">
-          Aucun pari pour ce match. Soyez le premier !
+          Aucun pari pour ce match.
         </div>
       ) : (
         <ul className="m-0 list-none p-0" aria-label="Paris des participants">

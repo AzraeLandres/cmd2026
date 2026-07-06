@@ -1,4 +1,4 @@
-import { callGroqAPI } from '../lib/groq';
+import { callGroqAPI, GroqApiError } from '../lib/groq';
 import { getMatches } from '../lib/football';
 import { isRateLimited } from '../lib/rateLimit';
 import { GraphQLContext, Match } from '../types';
@@ -8,7 +8,7 @@ const SYSTEM_PROMPT = `Tu es un assistant expert en football pour la Coupe du Mo
 Tu réponds en français de façon concise et précise.
 Tu as accès à la liste des matchs suivis par l'application (à venir, en direct ou terminés) fournie ci-dessous, avec la date et l'heure actuelles : utilise-la en priorité pour toute question sur ces matchs précis, c'est la source la plus fiable pour ce qui concerne l'application.
 Les sections "Matchs récents" et "Prochains matchs" sont déjà triées chronologiquement (la plus récente/proche en premier) — fie-toi à cet ordre plutôt que de recalculer les dates toi-même.
-Pour toute autre question d'actualité (autres résultats, informations générales sur la compétition, équipes, joueurs…), utilise la recherche web pour donner une réponse à jour plutôt que de te fier uniquement à tes connaissances.
+N'utilise la recherche web QUE si l'information peut avoir changé récemment (résultat d'un match récent, actualité, transfert...) et que tu n'es pas certain de la connaître. Pour toute question de culture générale stable (qui est un joueur, son poste, son palmarès passé, les règles du jeu, l'histoire de la compétition...), réponds directement avec tes connaissances, sans chercher sur le web — c'est plus rapide et ça évite de surcharger l'API inutilement.
 Ne fournis jamais d'informations inventées — si tu ne trouves rien de fiable, dis-le clairement.`;
 
 const CHAT_LIMIT        = 20;
@@ -84,9 +84,20 @@ export const chatResolvers = {
         // données de match non critiques pour la réponse du chatbot
       }
 
-      return callGroqAPI(SYSTEM_PROMPT + matchContext, [
-        { role: 'user', content: message },
-      ]);
+      try {
+        return await callGroqAPI(SYSTEM_PROMPT + matchContext, [
+          { role: 'user', content: message },
+        ]);
+      } catch (err) {
+        if (err instanceof GroqApiError && err.code === 'rate_limit_exceeded') {
+          throw new GraphQLError('Le chatbot est très sollicité en ce moment, réessayez dans une minute.', {
+            extensions: { code: 'CHATBOT_RATE_LIMITED' },
+          });
+        }
+        throw new GraphQLError('Le chatbot est momentanément indisponible, réessayez plus tard.', {
+          extensions: { code: 'CHATBOT_UNAVAILABLE' },
+        });
+      }
     },
   },
 };
